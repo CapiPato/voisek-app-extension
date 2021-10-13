@@ -13,7 +13,9 @@ import com.facebook.react.module.annotations.ReactModule
 import java.util.*
 
 @ReactModule(name = VoisekCallStateExtensionModule.NAME)
-class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityLifecycleCallbacks, VoisekPhoneStateListener.PhoneCallStateUpdate {
+class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext), ActivityLifecycleCallbacks,
+  VoisekPhoneStateListener.PhoneCallStateUpdate {
   private var wasAppInOffHook = false
   private var wasAppInRinging = false
   private var telephonyManager: TelephonyManager? = null
@@ -31,16 +33,21 @@ class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationC
       activity!!.application.registerActivityLifecycleCallbacks(this)
     }
     telephonyManager = reactContext.getSystemService(
-      Context.TELEPHONY_SERVICE) as TelephonyManager
+      Context.TELEPHONY_SERVICE
+    ) as TelephonyManager
     callDetectionPhoneStateListener = VoisekPhoneStateListener(this)
-    telephonyManager!!.listen(callDetectionPhoneStateListener,
-      PhoneStateListener.LISTEN_CALL_STATE)
+    telephonyManager!!.listen(
+      callDetectionPhoneStateListener,
+      PhoneStateListener.LISTEN_CALL_STATE
+    )
   }
 
   @ReactMethod
   fun stopCallerListener() {
-    telephonyManager!!.listen(callDetectionPhoneStateListener,
-      PhoneStateListener.LISTEN_NONE)
+    telephonyManager!!.listen(
+      callDetectionPhoneStateListener,
+      PhoneStateListener.LISTEN_NONE
+    )
     telephonyManager = null
     callDetectionPhoneStateListener = null
   }
@@ -48,7 +55,7 @@ class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationC
   /**
    * @return a map of constants this module exports to JS. Supports JSON types.
    */
-  override fun getConstants(): Map<String, Any>? {
+  public override fun getConstants(): Map<String, Any>? {
     val map: MutableMap<String, Any> = HashMap()
     map["incoming"] = "incoming"
     map["offhook"] = "offhook"
@@ -58,14 +65,14 @@ class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationC
   }
 
   // Activity Lifecycle Methods
-  override fun onActivityCreated(activity: Activity, savedInstanceType: Bundle) {}
-  override fun onActivityStarted(activity: Activity) {}
-  override fun onActivityResumed(activity: Activity) {}
-  override fun onActivityPaused(activity: Activity) {}
-  override fun onActivityStopped(activity: Activity) {}
-  override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-  override fun onActivityDestroyed(activity: Activity) {}
-  override fun phoneCallStateUpdated(state: Int, phoneNumber: String?) {
+  public override fun onActivityCreated(activity: Activity, savedInstanceType: Bundle) {}
+  public override fun onActivityStarted(activity: Activity) {}
+  public override fun onActivityResumed(activity: Activity) {}
+  public override fun onActivityPaused(activity: Activity) {}
+  public override fun onActivityStopped(activity: Activity) {}
+  public override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+  public override fun onActivityDestroyed(activity: Activity) {}
+  public override fun phoneCallStateUpdated(state: Int, phoneNumber: String?) {
     jsModule = reactContext.getJSModule(VoisekCallStateUpdateActionModule::class.java)
     when (state) {
       TelephonyManager.CALL_STATE_IDLE -> {
