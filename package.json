@@ -78,6 +78,12 @@
       "<rootDir>/lib/"
     ]
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "yarn typescript"
+    }
+  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
