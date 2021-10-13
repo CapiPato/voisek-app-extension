@@ -27,17 +27,14 @@ export default function App() {
   const [inputNumber, onChangeInputNumber] = useState<string>('');
   const toggleSwitchBlockList = () =>
     setIsBlockListEnable((previousState) => !previousState);
-  useEffect(() => {
-    VoisekAppExtension.doActiveBlockCallOnList(isBlockListEnable);
-  }, [isBlockListEnable]);
 
   function CallStateCheck(event: string, number: string) {
     setNewState({ event, number });
   }
 
-  function addCallDetectionEvent(newState: { event: string; number: string }) {
+  function addCallDetectionEvent(addState: { event: string; number: string }) {
     const newResult = [...callDetectionResult];
-    newResult.push(newState);
+    newResult.push(addState);
     console.log('newResult', newResult);
     setCallDetectionResult(newResult);
   }
@@ -51,9 +48,15 @@ export default function App() {
   }
 
   useEffect(() => {
+    VoisekAppExtension.doActiveBlockCallOnList(isBlockListEnable);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBlockListEnable]);
+
+  useEffect(() => {
     if (newState !== undefined) {
       addCallDetectionEvent(newState);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newState]);
 
   useEffect(() => {
@@ -62,17 +65,14 @@ export default function App() {
         currentCallDetector.dispose();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCallDetector]);
 
   useEffect(() => {
     if (callDetection === true) {
       addCallDetector();
     }
-    return function cleanup() {
-      if (currentCallDetector !== undefined) {
-        currentCallDetector.dispose();
-      }
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callDetection]);
 
   function TestInitialize() {
