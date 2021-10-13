@@ -35,27 +35,45 @@ export default function App() {
     setNewState({ event, number });
   }
 
-  useEffect(() => {
-    if (newState !== undefined) {
-      const newResult = [...callDetectionResult];
-      newResult.push(newState);
-      console.log('newResult', newResult);
-      setCallDetectionResult(newResult);
-    }
-  }, [newState, callDetectionResult]);
+  function addCallDetectionEvent(newState: { event: string; number: string }) {
+    const newResult = [...callDetectionResult];
+    newResult.push(newState);
+    console.log('newResult', newResult);
+    setCallDetectionResult(newResult);
+  }
 
-  useEffect(() => {
+  function addCallDetector() {
     if (callDetection === true && currentCallDetector === undefined) {
       console.log('Start: callDetection');
       const tempCallDetector = new VoisekCallStateManager(CallStateCheck);
       setCallDetector(tempCallDetector);
+    }
+  }
+
+  useEffect(() => {
+    if (newState !== undefined) {
+      addCallDetectionEvent(newState);
+    }
+  }, [newState]);
+
+  useEffect(() => {
+    return function cleanup() {
+      if (currentCallDetector !== undefined) {
+        currentCallDetector.dispose();
+      }
+    };
+  }, [currentCallDetector]);
+
+  useEffect(() => {
+    if (callDetection === true) {
+      addCallDetector();
     }
     return function cleanup() {
       if (currentCallDetector !== undefined) {
         currentCallDetector.dispose();
       }
     };
-  }, [callDetection, currentCallDetector]);
+  }, [callDetection]);
 
   function TestInitialize() {
     VoisekAppExtension.initCallService(
