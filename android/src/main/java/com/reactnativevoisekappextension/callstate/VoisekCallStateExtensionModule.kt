@@ -64,14 +64,6 @@ class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationC
     return map
   }
 
-  // Activity Lifecycle Methods
-  override fun onActivityCreated(activity: Activity?, savedInstanceType: Bundle?) {}
-  override fun onActivityStarted(activity: Activity?) {}
-  override fun onActivityResumed(activity: Activity?) {}
-  override fun onActivityPaused(activity: Activity?) {}
-  override fun onActivityStopped(activity: Activity?) {}
-  override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {}
-  override fun onActivityDestroyed(activity: Activity?) {}
   override fun phoneCallStateUpdated(state: Int, phoneNumber: String?) {
     jsModule = reactContext.getJSModule(VoisekCallStateUpdateActionModule::class.java)
     when (state) {
@@ -97,6 +89,29 @@ class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationC
         jsModule?.callStateUpdated("incoming", phoneNumber)
       }
     }
+  }
+
+  // Activity Lifecycle Methods
+  override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    TODO("Not yet implemented")
+  }
+  override fun onActivityStarted(activity: Activity) {
+    TODO("Not yet implemented")
+  }
+  override fun onActivityResumed(activity: Activity) {
+    TODO("Not yet implemented")
+  }
+  override fun onActivityPaused(activity: Activity) {
+    TODO("Not yet implemented")
+  }
+  override fun onActivityStopped(activity: Activity) {
+    TODO("Not yet implemented")
+  }
+  override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+    TODO("Not yet implemented")
+  }
+  override fun onActivityDestroyed(activity: Activity) {
+    TODO("Not yet implemented")
   }
 
   companion object {
