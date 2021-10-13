@@ -1,9 +1,17 @@
 import { NativeModules } from 'react-native';
 
-type VoisekAppExtensionType = {
-  multiply(a: number, b: number): Promise<number>;
+import VoisekCallStateManager from './VoisekCallStateManager';
+
+type VoisekAppExtension = {
+  initCallService(
+    requestCallService: boolean,
+    callbackSuccess: Function,
+    callbackFail: Function
+  ): void;
+  doActiveBlockCallOnList(active: boolean): void;
+  addBlockingPhoneNumbers(blockingPhoneNumbers: any[]): Promise<any>;
 };
 
 const { VoisekAppExtension } = NativeModules;
 
-export default VoisekAppExtension as VoisekAppExtensionType;
+export { VoisekAppExtension as VoisekAppExtension, VoisekCallStateManager };
