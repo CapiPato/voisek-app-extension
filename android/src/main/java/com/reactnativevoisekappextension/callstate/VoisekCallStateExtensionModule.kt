@@ -65,14 +65,14 @@ class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationC
   }
 
   // Activity Lifecycle Methods
-  public override fun onActivityCreated(activity: Activity, savedInstanceType: Bundle) {}
-  public override fun onActivityStarted(activity: Activity) {}
-  public override fun onActivityResumed(activity: Activity) {}
-  public override fun onActivityPaused(activity: Activity) {}
-  public override fun onActivityStopped(activity: Activity) {}
-  public override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-  public override fun onActivityDestroyed(activity: Activity) {}
-  public override fun phoneCallStateUpdated(state: Int, phoneNumber: String?) {
+  override fun onActivityCreated(activity: Activity?, savedInstanceType: Bundle?) {}
+  override fun onActivityStarted(activity: Activity?) {}
+  override fun onActivityResumed(activity: Activity?) {}
+  override fun onActivityPaused(activity: Activity?) {}
+  override fun onActivityStopped(activity: Activity?) {}
+  override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {}
+  override fun onActivityDestroyed(activity: Activity?) {}
+  override fun phoneCallStateUpdated(state: Int, phoneNumber: String?) {
     jsModule = reactContext.getJSModule(VoisekCallStateUpdateActionModule::class.java)
     when (state) {
       TelephonyManager.CALL_STATE_IDLE -> {
