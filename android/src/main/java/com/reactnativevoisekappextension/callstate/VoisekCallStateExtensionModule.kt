@@ -93,25 +93,25 @@ class VoisekCallStateExtensionModule(private val reactContext: ReactApplicationC
 
   // Activity Lifecycle Methods
   override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-    TODO("Not yet implemented")
+    var data = "DATA"
   }
   override fun onActivityStarted(activity: Activity) {
-    TODO("Not yet implemented")
+    var data = "DATA"
   }
   override fun onActivityResumed(activity: Activity) {
-    TODO("Not yet implemented")
+    var data = "DATA"
   }
   override fun onActivityPaused(activity: Activity) {
-    TODO("Not yet implemented")
+    var data = "DATA"
   }
   override fun onActivityStopped(activity: Activity) {
-    TODO("Not yet implemented")
+    var data = "DATA"
   }
   override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-    TODO("Not yet implemented")
+    var data = "DATA"
   }
   override fun onActivityDestroyed(activity: Activity) {
-    TODO("Not yet implemented")
+    var data = "DATA"
   }
 
   companion object {
