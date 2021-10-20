@@ -48,17 +48,25 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       } else {
         callbackSuccsessInitCallService = callbackSuccess
         callbackFailInitCallService = callbackFail
-        val sharedPreferences = reactApplicationContext.getSharedPreferences(
+        val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
+          Constants.CALLER_OPTIONS_KEY,
+          Context.MODE_PRIVATE
+        )
+        val editorOptions = sharedPreferencesOptions.edit();
+        val sharedPreferencesRequestData = reactApplicationContext.getSharedPreferences(
           Constants.REQUEST_DATA_KEY,
           Context.MODE_PRIVATE
         )
-        val editor = sharedPreferences.edit()
+        val editorRequestData = sharedPreferencesRequestData.edit()
         if (requestCallService != null) {
-          editor.putBoolean("CanRequestRole", requestCallService)
+          editorRequestData.putBoolean(Constants.OPTION_CAN_REQUEST_ROLE, requestCallService)
+          editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, requestCallService)
         }else{
-          editor.putBoolean("CanRequestRole", false)
+          editorRequestData.putBoolean(Constants.OPTION_CAN_REQUEST_ROLE, false)
+          editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, false)
         }
-        editor.apply()
+        editorOptions.apply()
+        editorRequestData.apply()
         val activity: PermissionAwareActivity = currentActivity as PermissionAwareActivity
         activity.requestPermissions(neededPerms, Constants.PHONE_NEEDED_PERM, this)
       }
@@ -66,34 +74,47 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun doActiveBlockCallOnList(active: Boolean) {
-    val sharedPreferences = reactApplicationContext.getSharedPreferences(
-      Constants.CALLER_BLOCK_OPTIONS_KEY,
+  fun stopCallService(
+  ) {
+    val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
+      Constants.CALLER_OPTIONS_KEY,
       Context.MODE_PRIVATE
     )
-    val editor = sharedPreferences.edit()
-    editor.putBoolean("BlockCallsOnList", active)
-    editor.apply()
+    val editorOptions = sharedPreferencesOptions.edit()
+    editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, false)
+    editorOptions.putBoolean(Constants.OPTION_BLOCK_CALL_ON_BLACK_LIST, false)
+    editorOptions.apply()
+  }
+
+  @ReactMethod
+  fun doActiveBlockCallOnList(active: Boolean) {
+    val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
+      Constants.CALLER_OPTIONS_KEY,
+      Context.MODE_PRIVATE
+    )
+    val editorOptions = sharedPreferencesOptions.edit()
+    editorOptions.putBoolean(Constants.OPTION_BLOCK_CALL_ON_BLACK_LIST, active)
+    editorOptions.apply()
   }
 
   @ReactMethod
   fun addBlockingPhoneNumbers(callerList: ReadableArray, promise: Promise) {
     try {
-      val sharedPreferences = reactApplicationContext.getSharedPreferences(
+      val sharedPreferencesBlockingNumbers = reactApplicationContext.getSharedPreferences(
         Constants.CALLER_BLOCK_KEY,
         Context.MODE_PRIVATE
       )
-      val editor = sharedPreferences.edit()
-      editor.clear()
+      val editorBlockingNumbers = sharedPreferencesBlockingNumbers.edit()
+      editorBlockingNumbers.clear()
       for (i in 0 until callerList.size()) {
         val caller = callerList.getMap(i)
         if (caller != null && caller.hasKey("category") && caller.hasKey("number")) {
           val callerName = caller.getString("category")
           val callerNumber = caller.getString("number")
-          editor.putString(callerNumber, callerName)
+          editorBlockingNumbers.putString(callerNumber, callerName)
         }
       }
-      editor.apply()
+      editorBlockingNumbers.apply()
       promise.resolve("Did Add data")
     } catch (e: Exception) {
       Log.e("CALLER_ID", e.localizedMessage)
@@ -101,7 +122,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  fun requestRole() {
+  private fun requestRole() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && canRequestRole()) {
       try {
         val roleManager =
@@ -121,10 +142,10 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  fun canRequestRole(): Boolean {
-    val sharedPreferences =
+  private fun canRequestRole(): Boolean {
+    val sharedPreferencesRequestData =
       reactApplicationContext.getSharedPreferences(Constants.REQUEST_DATA_KEY, Context.MODE_PRIVATE)
-    return sharedPreferences.getBoolean("CanRequestRole", false)
+    return sharedPreferencesRequestData.getBoolean(Constants.OPTION_CAN_REQUEST_ROLE, false)
   }
 
   override fun onActivityResult(
@@ -161,6 +182,13 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
         havePerm = false
       }
       if (havePerm) {
+        val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
+          Constants.CALLER_OPTIONS_KEY,
+          Context.MODE_PRIVATE
+        )
+        val editorOptions = sharedPreferencesOptions.edit();
+        editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, true)
+        editorOptions.apply()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           requestRole()
         } else {

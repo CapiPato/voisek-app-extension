@@ -1,79 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
-  FlatList,
   StyleSheet,
   Switch,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import {
-  VoisekAppExtension,
-  VoisekCallStateManager,
-} from 'react-native-voisek-app-extension';
+import { VoisekAppExtension } from 'react-native-voisek-app-extension';
 
 export default function App() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isBlockListEnable, setIsBlockListEnable] = useState(false);
-  const [callDetection, setCallDetecion] = useState(false);
-  const [currentCallDetector, setCallDetector] = useState<
-    VoisekCallStateManager | undefined
-  >(undefined);
-  const [callDetectionResult, setCallDetectionResult] = useState<
-    { event: string; number: string }[]
-  >([]);
-  const [newState, setNewState] = useState<{ event: string; number: string }>();
   const [inputNumber, onChangeInputNumber] = useState<string>('');
   const toggleSwitchBlockList = () =>
     setIsBlockListEnable((previousState) => !previousState);
-
-  function CallStateCheck(event: string, number: string) {
-    setNewState({ event, number });
-  }
-
-  function addCallDetectionEvent(addState: { event: string; number: string }) {
-    const newResult = [...callDetectionResult];
-    newResult.push(addState);
-    console.log('newResult', newResult);
-    setCallDetectionResult(newResult);
-  }
-
-  function addCallDetector() {
-    if (callDetection === true && currentCallDetector === undefined) {
-      console.log('Start: callDetection');
-      const tempCallDetector = new VoisekCallStateManager(CallStateCheck);
-      setCallDetector(tempCallDetector);
-    }
-  }
 
   useEffect(() => {
     VoisekAppExtension.doActiveBlockCallOnList(isBlockListEnable);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBlockListEnable]);
-
-  useEffect(() => {
-    if (newState !== undefined) {
-      addCallDetectionEvent(newState);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newState]);
-
-  useEffect(() => {
-    return function cleanup() {
-      if (currentCallDetector !== undefined) {
-        currentCallDetector.dispose();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCallDetector]);
-
-  useEffect(() => {
-    if (callDetection === true) {
-      addCallDetector();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [callDetection]);
 
   function TestInitialize() {
     VoisekAppExtension.initCallService(
@@ -100,10 +46,6 @@ export default function App() {
     console.log('addBlockingPhoneNumbers', addBlockingPhoneNumbers);
   }
 
-  async function TestCallDetection() {
-    setCallDetecion(true);
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -119,27 +61,6 @@ export default function App() {
         color="#D0021B"
         accessibilityLabel="Initialized"
       />
-      <View style={styles.normalSpace} />
-      <Button
-        onPress={() => {
-          TestCallDetection();
-        }}
-        title="Call Detection"
-        color="#D0021B"
-        accessibilityLabel="Start Call Detection"
-        disabled={!isInitialized}
-      />
-      <View style={styles.smallSpace} />
-      <View style={styles.callDetectSquare}>
-        <FlatList
-          keyExtractor={(_item, index) => index.toString()}
-          style={styles.list}
-          data={callDetectionResult}
-          renderItem={({ item }) => {
-            return <Text>{`${item.event}: ${item.number}`}</Text>;
-          }}
-        />
-      </View>
       <View style={styles.normalSpace} />
       <TextInput
         style={styles.input}
