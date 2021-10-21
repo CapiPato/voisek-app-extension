@@ -14,6 +14,7 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
+import com.reactnativevoisekappextension.callstate.VoisekCallStateHeadlessTaskInit
 import com.reactnativevoisekappextension.callstate.VoisekCallStateHeadlessTaskService
 import com.reactnativevoisekappextension.utils.Constants
 
@@ -128,7 +129,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun onGoingBackground(){
     try {
-      val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
+      val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskInit::class.java)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         reactApplicationContext.startForegroundService(service)
       }
