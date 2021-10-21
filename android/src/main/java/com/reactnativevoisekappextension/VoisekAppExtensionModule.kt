@@ -72,7 +72,6 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
         editorRequestData.apply()
         val activity: PermissionAwareActivity = currentActivity as PermissionAwareActivity
         activity.requestPermissions(neededPerms, Constants.PHONE_NEEDED_PERM, this)
-        invokeCallHeadlessTaskInit();
       }
     }
   }
@@ -126,7 +125,8 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  private fun invokeCallHeadlessTaskInit(){
+  @ReactMethod
+  fun onGoingBackground(){
     try {
       val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

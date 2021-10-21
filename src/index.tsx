@@ -7,6 +7,7 @@ type VoisekAppExtension = {
     callbackFail: Function
   ): void;
   stopCallService(): void;
+  onGoingBackground(): void;
   doActiveBlockCallOnList(active: boolean): void;
   addBlockingPhoneNumbers(blockingPhoneNumbers: any[]): Promise<any>;
 };
