@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 
 object VoisekCallStateHeadlessTaskServiceUtils {
   const val SETUP_NOTIFICATION_CHANNEL = "voisek-extension.listener"
+  const val SETUP_NOTIFICATION_CHANNEL_INIT = "voisek-extension.listener.init"
   private fun createSetupNotificationChannel(context: Context?) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val channel = NotificationChannel(
@@ -29,6 +30,34 @@ object VoisekCallStateHeadlessTaskServiceUtils {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       createSetupNotificationChannel(context)
       channel = SETUP_NOTIFICATION_CHANNEL
+    }
+    val notificationBuilder = NotificationCompat.Builder(
+      context!!, channel!!
+    )
+    return notificationBuilder.setPriority(NotificationManager.IMPORTANCE_HIGH)
+      .setCategory(Notification.CATEGORY_SERVICE)
+      .build()
+  }
+
+  private fun createSetupNotificationChannelInit(context: Context?) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val channel = NotificationChannel(
+        SETUP_NOTIFICATION_CHANNEL_INIT,
+        "Voisek Init Listener",
+        NotificationManager.IMPORTANCE_HIGH
+      )
+      channel.setShowBadge(false)
+      channel.setSound(null, null)
+      val manager = (context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+      manager.createNotificationChannel(channel)
+    }
+  }
+
+  fun createBlankSetupNotificationInit(context: Context?): Notification? {
+    var channel: String? = null
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      createSetupNotificationChannelInit(context)
+      channel = SETUP_NOTIFICATION_CHANNEL_INIT
     }
     val notificationBuilder = NotificationCompat.Builder(
       context!!, channel!!

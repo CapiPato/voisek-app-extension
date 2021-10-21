@@ -11,8 +11,8 @@ class VoisekCallStateHeadlessTaskInit : HeadlessJsTaskService() {
   private val tag = "phoneStateService"
   override fun onCreate() {
     super.onCreate()
-    val notification: Notification? = VoisekCallStateHeadlessTaskServiceUtils.createBlankSetupNotification(this)
-    startForeground(1, notification)
+    val notification: Notification? = VoisekCallStateHeadlessTaskServiceUtils.createBlankSetupNotificationInit(this)
+    startForeground(0, notification)
   }
 
   override fun getTaskConfig(intent: Intent): HeadlessJsTaskConfig? {
