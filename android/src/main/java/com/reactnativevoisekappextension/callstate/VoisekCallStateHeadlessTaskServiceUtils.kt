@@ -36,6 +36,9 @@ object VoisekCallStateHeadlessTaskServiceUtils {
     )
     return notificationBuilder.setPriority(NotificationManager.IMPORTANCE_HIGH)
       .setCategory(Notification.CATEGORY_SERVICE)
+      .setContentTitle("Voisek APP")
+      .setContentText("Running…")
+      .setOngoing(true)
       .build()
   }
 
@@ -64,6 +67,9 @@ object VoisekCallStateHeadlessTaskServiceUtils {
     )
     return notificationBuilder.setPriority(NotificationManager.IMPORTANCE_HIGH)
       .setCategory(Notification.CATEGORY_SERVICE)
+      .setContentTitle("Voisek APP")
+      .setContentText("Running…")
+      .setOngoing(true)
       .build()
   }
 }

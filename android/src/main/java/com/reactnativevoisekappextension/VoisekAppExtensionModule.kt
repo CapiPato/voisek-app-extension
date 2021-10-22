@@ -78,8 +78,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun stopCallService(
-  ) {
+  fun stopCallService() {
     val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
       Constants.CALLER_OPTIONS_KEY,
       Context.MODE_PRIVATE
@@ -128,6 +127,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun onGoingBackground(){
+    Log.d("HJS INIT", "onGoingBackground");
     try {
       val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskInit::class.java)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -137,6 +137,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
         reactApplicationContext.startService(service)
       }
       HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext);
+      Log.d("HJS INIT", "HeadlessJsTaskService");
     } catch (ex: IllegalStateException) {
       // By default, data only messages are "default" priority and cannot trigger Headless tasks
       Log.e("HJS INIT", "ERROR", ex);
