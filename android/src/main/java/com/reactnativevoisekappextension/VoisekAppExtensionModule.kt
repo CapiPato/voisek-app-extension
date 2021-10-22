@@ -7,15 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Bundle
 import android.util.Log
-import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import com.reactnativevoisekappextension.callstate.VoisekCallStateHeadlessTaskInit
-import com.reactnativevoisekappextension.callstate.VoisekCallStateHeadlessTaskService
 import com.reactnativevoisekappextension.utils.Constants
 
 @ReactModule(name = VoisekAppExtensionModule.NAME)
@@ -122,25 +118,6 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     } catch (e: Exception) {
       Log.e("CALLER_ID", e.localizedMessage)
       promise.resolve(e.localizedMessage)
-    }
-  }
-
-  @ReactMethod
-  fun onGoingBackground(){
-    Log.d("HJS INIT", "onGoingBackground");
-    try {
-      val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskInit::class.java)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        reactApplicationContext.startForegroundService(service)
-      }
-      else{
-        reactApplicationContext.startService(service)
-      }
-      HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext);
-      Log.d("HJS INIT", "HeadlessJsTaskService");
-    } catch (ex: IllegalStateException) {
-      // By default, data only messages are "default" priority and cannot trigger Headless tasks
-      Log.e("HJS INIT", "ERROR", ex);
     }
   }
 

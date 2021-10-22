@@ -1,6 +1,5 @@
 package com.reactnativevoisekappextension.callstate
 
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.TELEPHONY_SERVICE
@@ -13,8 +12,6 @@ import android.telephony.PhoneStateListener
 import android.telephony.PhoneStateListener.LISTEN_CALL_STATE
 import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.annotation.RequiresApi
-import com.facebook.react.bridge.ReactApplicationContext
 import com.reactnativevoisekappextension.utils.Constants
 
 
@@ -23,7 +20,7 @@ class VoisekCallStateService : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     if(isCanCallCheck(context)) {
       Log.d(tag, "onReceive")
-      val telephonyManager = context?.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+      val telephonyManager = context.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
       val monitor = StateMonitor(context)
       telephonyManager.listen(monitor, LISTEN_CALL_STATE)
     }
@@ -78,10 +75,10 @@ class VoisekCallStateService : BroadcastReceiver() {
         else{
           context.startService(service)
         }
-        HeadlessJsTaskService.acquireWakeLockNow(context);
+        HeadlessJsTaskService.acquireWakeLockNow(context)
       } catch (ex: IllegalStateException) {
         // By default, data only messages are "default" priority and cannot trigger Headless tasks
-        Log.e(tag, "ERROR", ex);
+        Log.e(tag, "ERROR", ex)
       }
     }
   }

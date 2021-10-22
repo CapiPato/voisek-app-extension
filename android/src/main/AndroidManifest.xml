@@ -12,9 +12,6 @@
     <service
       android:name=".callstate.VoisekCallStateHeadlessTaskService">
     </service>
-    <service
-      android:name=".callstate.VoisekCallStateHeadlessTaskInit">
-    </service>
     <service android:name=".callscreenservice.VoisekCallScreenService"
       android:permission="android.permission.BIND_SCREENING_SERVICE">
       <intent-filter>
