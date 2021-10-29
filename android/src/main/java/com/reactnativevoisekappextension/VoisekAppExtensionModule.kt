@@ -8,17 +8,22 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
+import com.reactnativevoisekappextension.notification.VoisekNotification
+import com.reactnativevoisekappextension.notification.VoisekNotificationService
 import com.reactnativevoisekappextension.utils.Constants
+
 
 @ReactModule(name = VoisekAppExtensionModule.NAME)
 class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), PermissionListener, ActivityEventListener {
-  private var reactContext: ReactApplicationContext? = reactContext
-  private var callbackSuccsessInitCallService: Callback? = null
+  ReactContextBaseJavaModule(reactContext), PermissionListener, ActivityEventListener,
+  LifecycleEventListener {
+  private lateinit var mainActivity: Activity
+  private var callbackSuccessInitCallService: Callback? = null
   private var callbackFailInitCallService: Callback? = null
   private val neededPerms = arrayOf(
     Manifest.permission.READ_CONTACTS,
@@ -28,7 +33,14 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun initialize() {
     super.initialize()
-    reactContext?.addActivityEventListener(this)
+    currentActivity.let {
+      it
+      if (it != null) {
+        mainActivity = it
+      }
+    }
+    reactApplicationContext?.addActivityEventListener(this)
+    reactApplicationContext?.addLifecycleEventListener(this);
   }
 
   override fun getName(): String {
@@ -46,8 +58,10 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       if (it == null) {
         callbackFail?.invoke("Fail")
       } else {
-        callbackSuccsessInitCallService = callbackSuccess
+        mainActivity = it
+        callbackSuccessInitCallService = callbackSuccess
         callbackFailInitCallService = callbackFail
+        cancelNotifications()
         val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
           Constants.CALLER_OPTIONS_KEY,
           Context.MODE_PRIVATE
@@ -61,7 +75,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
         if (requestCallService != null) {
           editorRequestData.putBoolean(Constants.OPTION_CAN_REQUEST_ROLE, requestCallService)
           editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, requestCallService)
-        }else{
+        } else {
           editorRequestData.putBoolean(Constants.OPTION_CAN_REQUEST_ROLE, false)
           editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, false)
         }
@@ -79,6 +93,9 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       Constants.CALLER_OPTIONS_KEY,
       Context.MODE_PRIVATE
     )
+    val stopService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
+    stopService.action = Constants.VOISEK_ACTION_FOREGROUND_SERVICE_STOP;
+    reactApplicationContext.startService(stopService)
     val editorOptions = sharedPreferencesOptions.edit()
     editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, false)
     editorOptions.putBoolean(Constants.OPTION_BLOCK_CALL_ON_BLACK_LIST, false)
@@ -121,6 +138,25 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     }
   }
 
+  @ReactMethod
+  fun cancelNotifications() {
+    val stopService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
+    reactApplicationContext.stopService(stopService)
+  }
+
+  @ReactMethod
+  fun showAFullScreenNotification(title: String, desc: String) {
+    val notService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
+    notService.action = Constants.VOISEK_ACTION_FOREGROUND_SHOW_NOT;
+    notService.putExtra("title", title);
+    notService.putExtra("desc", desc);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      reactApplicationContext.startForegroundService(notService)
+    } else {
+      reactApplicationContext.startService(notService)
+    }
+  }
+
   private fun requestRole() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && canRequestRole()) {
       try {
@@ -137,7 +173,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
         callbackFailInitCallService?.invoke()
       }
     } else {
-      callbackSuccsessInitCallService?.invoke()
+      callbackSuccessInitCallService?.invoke()
     }
   }
 
@@ -155,12 +191,13 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   ) {
     if (requestCode == Constants.REQUEST_ID_BECOME_CALL_SCREENER) {
       if (resultCode != 0) {
-        callbackSuccsessInitCallService?.invoke()
+        callbackSuccessInitCallService?.invoke()
       } else {
         callbackFailInitCallService?.invoke()
       }
     }
   }
+
   override fun onNewIntent(intent: Intent) {}
 
   override fun onRequestPermissionsResult(
@@ -191,7 +228,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           requestRole()
         } else {
-          callbackSuccsessInitCallService?.invoke()
+          callbackSuccessInitCallService?.invoke()
         }
       } else {
         callbackFailInitCallService?.invoke()
@@ -202,6 +239,18 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   companion object {
     const val NAME = "VoisekAppExtension"
+  }
+
+  override fun onHostResume() {
+    Log.d("Life", "onHostResume")
+  }
+
+  override fun onHostPause() {
+    Log.d("Life", "onHostPause")
+  }
+
+  override fun onHostDestroy() {
+    Log.d("Life", "onHostDestroy")
   }
 
 }

@@ -1,11 +1,22 @@
+import { VoisekAppExtension } from 'react-native-voisek-app-extension';
+
 type CallData = {
-  phoneNumber: string;
-  event: string;
+  phoneNumber?: string;
+  event?: string;
 };
 
-function CallStateTask({ phoneNumber, event }: CallData) {
+async function CallStateTask({ phoneNumber, event }: CallData) {
   console.log(event, phoneNumber);
-  return Promise.resolve();
+  VoisekAppExtension.cancelNotifications();
+  if (event === 'incoming') {
+    VoisekAppExtension.showAFullScreenNotification(
+      `${event}`,
+      `${event}: ${phoneNumber}`
+    );
+  }
 }
 
-export default CallStateTask;
+export default async (data: CallData) => {
+  // do stuff
+  await CallStateTask(data);
+};

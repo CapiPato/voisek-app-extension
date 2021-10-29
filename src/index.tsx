@@ -7,9 +7,10 @@ type VoisekAppExtension = {
     callbackFail: Function
   ): void;
   stopCallService(): void;
-  onGoingBackground(): void;
+  cancelNotifications(): void;
   doActiveBlockCallOnList(active: boolean): void;
   addBlockingPhoneNumbers(blockingPhoneNumbers: any[]): Promise<any>;
+  showAFullScreenNotification(title: string, desc: string): void;
 };
 
 const { VoisekAppExtension } = NativeModules;

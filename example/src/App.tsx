@@ -27,7 +27,6 @@ export default function App() {
       () => {
         console.log('SUCCESS');
         setIsInitialized(true);
-        VoisekAppExtension.onGoingBackground();
       },
       () => {
         console.log('FAIL');
