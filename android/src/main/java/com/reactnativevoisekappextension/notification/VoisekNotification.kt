@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.telecom.CallScreeningService
+import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.reactnativevoisekappextension.utils.Constants
@@ -23,9 +25,25 @@ object VoisekNotification {
     val notificationManager: NotificationManagerCompat =
       NotificationManagerCompat.from(context);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val channelId = Constants.VOISEK_NOT_CHANNEL_ID
-      val channelName = Constants.VOISEK_NOT_CHANNEL_NAME
-      val channelDesc = Constants.VOISEK_NOT_CHANNEL_DESC
+      val channelId = Constants.NOT_CHANNEL_ID
+      val sharedPreferencesNotData = context.getSharedPreferences(
+        Constants.NOT_CHANNEL_DATA,
+        CallScreeningService.MODE_PRIVATE
+      )
+      var channelName = sharedPreferencesNotData.getString(
+        Constants.NOT_CHANNEL_NAME,
+        Constants.NOT_CHANNEL_NAME
+      )
+      var channelDesc = sharedPreferencesNotData.getString(
+        Constants.NOT_CHANNEL_DESC,
+        Constants.NOT_CHANNEL_DESC
+      )
+      if (channelName == null || TextUtils.isEmpty(channelName)) {
+        channelName = Constants.NOT_CHANNEL_NAME
+      }
+      if (channelDesc == null || TextUtils.isEmpty(channelDesc)) {
+        channelDesc = Constants.NOT_CHANNEL_DESC
+      }
       val importance = NotificationManager.IMPORTANCE_HIGH
       val channel = NotificationChannel(channelId, channelName, importance)
       channel.description = channelDesc;
@@ -64,8 +82,21 @@ object VoisekNotification {
   fun createNotificationBlank(context: Context): Notification? {
     if (context != null) {
       Log.d(TAG, "createNotificationBlank")
-      val notName = Constants.VOISEK_NOT_CHANNEL_NAME
-      val notDesc = Constants.VOISEK_NOT_CHANNEL_DESC
+      val sharedPreferencesNotData = context.getSharedPreferences(
+        Constants.NOT_CHANNEL_DATA,
+        CallScreeningService.MODE_PRIVATE
+      )
+      var notName =
+        sharedPreferencesNotData.getString(Constants.NOT_NAME, Constants.NOT_NAME)
+      var notDesc =
+        sharedPreferencesNotData.getString(Constants.NOT_DESC, Constants.NOT_DESC)
+      if (notName == null || TextUtils.isEmpty(notName)) {
+        notName = Constants.NOT_NAME
+      }
+      if (notDesc == null || TextUtils.isEmpty(notDesc)) {
+        notDesc = Constants.NOT_DESC
+      }
+
       val resourceId: Int =
         context.resources.getIdentifier("ic_launcher", "mipmap", context.packageName)
       createFullScreenCallNotificationChannel(context)
@@ -88,12 +119,13 @@ object VoisekNotification {
     notName: String,
     notDesc: String
   ): Notification {
-    val builder = NotificationCompat.Builder(context, Constants.VOISEK_NOT_CHANNEL_ID)
+    val builder = NotificationCompat.Builder(context, Constants.NOT_CHANNEL_ID)
       .setSmallIcon(resourceId)
-      .setPriority(NotificationCompat.PRIORITY_MAX)
+      .setPriority(NotificationCompat.PRIORITY_HIGH)
       .setCategory(NotificationCompat.CATEGORY_CALL)
       .setContentTitle(notName)
       .setContentText(notDesc)
+      .setDefaults(NotificationCompat.DEFAULT_ALL)
       .setColor(Color.RED)
       .setColorized(true)
     if (pendingIntent !== null) {

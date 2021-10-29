@@ -6,6 +6,12 @@ type VoisekAppExtension = {
     callbackSuccess: Function,
     callbackFail: Function
   ): void;
+  setNotificationData(
+    listeningChannelTitle?: string,
+    listeningChannelDesc?: string,
+    listeningNotTitle?: string,
+    listeningNotDesc?: string
+  ): void;
   stopCallService(): void;
   cancelNotifications(): void;
   doActiveBlockCallOnList(active: boolean): void;

@@ -8,12 +8,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import androidx.core.app.NotificationManagerCompat
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import com.reactnativevoisekappextension.notification.VoisekNotification
 import com.reactnativevoisekappextension.notification.VoisekNotificationService
 import com.reactnativevoisekappextension.utils.Constants
 
@@ -72,6 +70,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
           Context.MODE_PRIVATE
         )
         val editorRequestData = sharedPreferencesRequestData.edit()
+
         if (requestCallService != null) {
           editorRequestData.putBoolean(Constants.OPTION_CAN_REQUEST_ROLE, requestCallService)
           editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, requestCallService)
@@ -88,13 +87,41 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
+  fun setNotificationData(
+    listeningChannelTitle: String?,
+    listeningChannelDesc: String?,
+    listeningNotTitle: String?,
+    listeningNotDesc: String?
+  ) {
+    val sharedPreferencesNotData = reactApplicationContext.getSharedPreferences(
+      Constants.NOT_CHANNEL_DATA,
+      Context.MODE_PRIVATE
+    )
+    val editorNotData = sharedPreferencesNotData.edit()
+    if (listeningChannelTitle != null) {
+      editorNotData.putString(Constants.NOT_CHANNEL_NAME, listeningChannelTitle)
+    }
+    if (listeningChannelDesc != null) {
+      editorNotData.putString(Constants.NOT_CHANNEL_DESC, listeningChannelDesc)
+    }
+    if (listeningNotTitle != null) {
+      editorNotData.putString(Constants.NOT_NAME, listeningNotTitle)
+    }
+    if (listeningNotDesc != null) {
+      editorNotData.putString(Constants.NOT_DESC, listeningNotDesc)
+    }
+    editorNotData.apply()
+  }
+
+
+  @ReactMethod
   fun stopCallService() {
     val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
       Constants.CALLER_OPTIONS_KEY,
       Context.MODE_PRIVATE
     )
     val stopService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
-    stopService.action = Constants.VOISEK_ACTION_FOREGROUND_SERVICE_STOP;
+    stopService.action = Constants.NOT_ACTION_FOREGROUND_SERVICE_STOP;
     reactApplicationContext.startService(stopService)
     val editorOptions = sharedPreferencesOptions.edit()
     editorOptions.putBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, false)
@@ -147,7 +174,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun showAFullScreenNotification(title: String, desc: String) {
     val notService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
-    notService.action = Constants.VOISEK_ACTION_FOREGROUND_SHOW_NOT;
+    notService.action = Constants.NOT_ACTION_FOREGROUND_SHOW_NOT;
     notService.putExtra("title", title);
     notService.putExtra("desc", desc);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -1,6 +1,5 @@
 package com.reactnativevoisekappextension.notification
 
-import android.R
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
@@ -21,7 +20,7 @@ class VoisekNotificationService : Service() {
     Log.d(VoisekNotification.TAG, "onStartCommand")
     val action = intent!!.action
     if (action != null) {
-      if (action == Constants.VOISEK_ACTION_FOREGROUND_SERVICE_START) {
+      if (action == Constants.NOT_ACTION_FOREGROUND_SERVICE_START) {
         // Send a notification that service is started
         Log.d(VoisekNotification.TAG, "VOISEK_ACTION_FOREGROUND_SERVICE_START")
         //invokeCallHeadlessTask()
@@ -30,8 +29,8 @@ class VoisekNotificationService : Service() {
         notificationManager.cancelAll()
         stopForeground(true)
         val notification = VoisekNotification.createNotificationBlank(this)
-        startForeground(Constants.VOISEK_NOT_FOREGROUND_ID, notification)
-      } else if (action == Constants.VOISEK_ACTION_FOREGROUND_SHOW_NOT) {
+        startForeground(Constants.NOT_FOREGROUND_ID, notification)
+      } else if (action == Constants.NOT_ACTION_FOREGROUND_SHOW_NOT) {
         val extras = intent.extras
         if (extras != null) {
           if (extras.containsKey("title") && extras.containsKey("desc")) {
@@ -43,9 +42,9 @@ class VoisekNotificationService : Service() {
               val notification = VoisekNotification.showAFullScreenNotification(this, title, desc)
               if (notification != null) {
                 Timer("SendingNot", false).schedule(500) {
-                  notificationManager.notify(Constants.VOISEK_NOT_ID, notification)
+                  notificationManager.notify(Constants.NOT_ID, notification)
                   startForeground(
-                    Constants.VOISEK_NOT_ID,
+                    Constants.NOT_ID,
                     notification
                   )
                 }
