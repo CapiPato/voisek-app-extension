@@ -28,7 +28,7 @@ class VoisekNotificationService : Service() {
           VoisekNotification.createFullScreenCallNotificationChannel(this)
         notificationManager.cancelAll()
         stopForeground(true)
-        val notification = VoisekNotification.createNotificationBlank(this)
+        val notification = VoisekNotification.createNotificationListeningStart(this)
         startForeground(Constants.NOT_FOREGROUND_ID, notification)
       } else if (action == Constants.NOT_ACTION_FOREGROUND_SHOW_NOT) {
         val extras = intent.extras
@@ -40,8 +40,10 @@ class VoisekNotificationService : Service() {
               val notificationManager: NotificationManagerCompat =
                 VoisekNotification.createFullScreenCallNotificationChannel(this)
               val notification = VoisekNotification.showAFullScreenNotification(this, title, desc)
+              notificationManager.cancelAll()
+              stopForeground(true)
               if (notification != null) {
-                Timer("SendingNot", false).schedule(500) {
+                Timer("SendingNot", false).schedule(3000) {
                   notificationManager.notify(Constants.NOT_ID, notification)
                   startForeground(
                     Constants.NOT_ID,

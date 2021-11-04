@@ -12,17 +12,20 @@ import android.telephony.PhoneStateListener
 import android.telephony.PhoneStateListener.LISTEN_CALL_STATE
 import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
+import com.reactnativevoisekappextension.notification.VoisekNotification
+import com.reactnativevoisekappextension.notification.VoisekNotificationService
 import com.reactnativevoisekappextension.utils.Constants
 
 
 class VoisekCallStateService : BroadcastReceiver() {
   private val tag = "phoneStateService"
-  private var currentEvent: String?  = null
+  private var currentEvent: String? = null
   private var currentNumber: String? = null
   override fun onReceive(context: Context, intent: Intent) {
     if (isCanCallCheck(context)) {
-      val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-      val phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+      val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+      val phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
       if (currentEvent != state || (phoneNumber != null && currentNumber != phoneNumber)) {
         currentEvent = state
         if (phoneNumber != null) {
@@ -34,14 +37,14 @@ class VoisekCallStateService : BroadcastReceiver() {
           }
         }
         if ((state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK))) {
-          if(currentNumber != null) {
-            currentNumber = null;
+          if (currentNumber != null) {
+            currentNumber = null
             invokeCallHeadlessTask(context, "offhook", null)
           }
         }
         if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-          if(currentNumber != null) {
-            currentNumber = null;
+          if (currentNumber != null) {
+            currentNumber = null
             invokeCallHeadlessTask(context, "disconnected", null)
           }
         }
@@ -67,7 +70,6 @@ class VoisekCallStateService : BroadcastReceiver() {
       }
       HeadlessJsTaskService.acquireWakeLockNow(context)
     } catch (ex: IllegalStateException) {
-      // By default, data only messages are "default" priority and cannot trigger Headless tasks
       Log.e(tag, "ERROR", ex)
     }
   }

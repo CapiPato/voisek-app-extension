@@ -27,10 +27,12 @@ export default function App() {
       () => {
         console.log('SUCCESS');
         VoisekAppExtension.setNotificationData(
-          'Title',
-          'Desc',
-          'Title',
-          'Desc'
+          '',
+          '',
+          '',
+          '',
+          '',
+          ''
         );
         setIsInitialized(true);
       },

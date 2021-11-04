@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.text.TextUtils
 import android.util.Log
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
@@ -90,26 +91,58 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   fun setNotificationData(
     listeningChannelTitle: String?,
     listeningChannelDesc: String?,
-    listeningNotTitle: String?,
-    listeningNotDesc: String?
+    listeningStartNotTitle: String?,
+    listeningStartNotDesc: String?,
+    listeningEndNotTitle: String?,
+    listeningEndNotDesc: String?
   ) {
     val sharedPreferencesNotData = reactApplicationContext.getSharedPreferences(
-      Constants.NOT_CHANNEL_DATA,
+      Constants.NOT_SHARED_PREF_DATA,
       Context.MODE_PRIVATE
     )
     val editorNotData = sharedPreferencesNotData.edit()
-    if (listeningChannelTitle != null) {
-      editorNotData.putString(Constants.NOT_CHANNEL_NAME, listeningChannelTitle)
+    if (listeningChannelTitle != null && !TextUtils.isEmpty(listeningChannelTitle)) {
+      editorNotData.putString(Constants.NOT_CHANNEL_NAME_KEY, listeningChannelTitle)
     }
-    if (listeningChannelDesc != null) {
-      editorNotData.putString(Constants.NOT_CHANNEL_DESC, listeningChannelDesc)
+    else{
+      editorNotData.putString(Constants.NOT_CHANNEL_NAME_KEY, Constants.NOT_CHANNEL_NAME)
     }
-    if (listeningNotTitle != null) {
-      editorNotData.putString(Constants.NOT_NAME, listeningNotTitle)
+
+    if (listeningChannelDesc != null && !TextUtils.isEmpty(listeningChannelDesc)) {
+      editorNotData.putString(Constants.NOT_CHANNEL_DESC_KEY, listeningChannelDesc)
     }
-    if (listeningNotDesc != null) {
-      editorNotData.putString(Constants.NOT_DESC, listeningNotDesc)
+    else{
+      editorNotData.putString(Constants.NOT_CHANNEL_DESC_KEY, Constants.NOT_CHANNEL_DESC)
     }
+
+    if (listeningStartNotTitle != null && !TextUtils.isEmpty(listeningStartNotTitle)) {
+      editorNotData.putString(Constants.NOT_NAME_LISTENING_INIT_KEY, listeningStartNotTitle)
+    }
+    else{
+      editorNotData.putString(Constants.NOT_NAME_LISTENING_INIT_KEY, Constants.NOT_NAME_LISTENING_INIT)
+    }
+
+    if (listeningStartNotDesc != null && !TextUtils.isEmpty(listeningStartNotDesc)) {
+      editorNotData.putString(Constants.NOT_DESC_LISTENING_INIT_KEY, listeningStartNotDesc)
+    }
+    else{
+      editorNotData.putString(Constants.NOT_DESC_LISTENING_INIT_KEY, Constants.NOT_DESC_LISTENING_INIT)
+    }
+
+    if (listeningEndNotTitle != null && !TextUtils.isEmpty(listeningEndNotTitle)) {
+      editorNotData.putString(Constants.NOT_NAME_LISTENING_END_KEY, listeningEndNotTitle)
+    }
+    else{
+      editorNotData.putString(Constants.NOT_NAME_LISTENING_END_KEY, Constants.NOT_NAME_LISTENING_END)
+    }
+
+    if (listeningEndNotDesc != null && !TextUtils.isEmpty(listeningEndNotDesc)) {
+      editorNotData.putString(Constants.NOT_DESC_LISTENING_END_KEY, listeningEndNotDesc)
+    }
+    else{
+      editorNotData.putString(Constants.NOT_DESC_LISTENING_END_KEY, Constants.NOT_DESC_LISTENING_END)
+    }
+
     editorNotData.apply()
   }
 

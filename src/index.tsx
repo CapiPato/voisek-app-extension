@@ -9,8 +9,10 @@ type VoisekAppExtension = {
   setNotificationData(
     listeningChannelTitle?: string,
     listeningChannelDesc?: string,
-    listeningNotTitle?: string,
-    listeningNotDesc?: string
+    listeningStartNotTitle?: string,
+    listeningStartNotDesc?: string,
+    listeningEndNotTitle?: string,
+    listeningEndNotDesc?: string
   ): void;
   stopCallService(): void;
   cancelNotifications(): void;
