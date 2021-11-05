@@ -25,33 +25,22 @@ export default function App() {
     VoisekAppExtension.initCallService(
       true,
       () => {
-        console.log('SUCCESS');
-        VoisekAppExtension.setNotificationData(
-          '',
-          '',
-          '',
-          '',
-          '',
-          ''
-        );
+        VoisekAppExtension.setNotificationData('', '', '', '', '', '');
         setIsInitialized(true);
       },
       () => {
-        console.log('FAIL');
         setIsInitialized(false);
       }
     );
   }
 
   async function TestAddNumbers() {
-    const addBlockingPhoneNumbers =
-      await VoisekAppExtension.addBlockingPhoneNumbers([
-        {
-          category: 'block',
-          number: inputNumber,
-        },
-      ]);
-    console.log('addBlockingPhoneNumbers', addBlockingPhoneNumbers);
+    await VoisekAppExtension.addBlockingPhoneNumbers([
+      {
+        category: 'block',
+        number: inputNumber,
+      },
+    ]);
   }
 
   return (

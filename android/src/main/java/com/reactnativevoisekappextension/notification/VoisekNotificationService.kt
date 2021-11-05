@@ -43,7 +43,7 @@ class VoisekNotificationService : Service() {
               notificationManager.cancelAll()
               stopForeground(true)
               if (notification != null) {
-                Timer("SendingNot", false).schedule(3000) {
+                Timer("SendingNot", false).schedule(1000) {
                   notificationManager.notify(Constants.NOT_ID, notification)
                   startForeground(
                     Constants.NOT_ID,
