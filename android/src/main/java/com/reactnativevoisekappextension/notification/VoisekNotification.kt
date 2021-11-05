@@ -12,6 +12,7 @@ import android.os.Build
 import android.telecom.CallScreeningService
 import android.text.TextUtils
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.reactnativevoisekappextension.utils.Constants
 
@@ -44,11 +45,10 @@ object VoisekNotification {
       if (channelDesc == null || TextUtils.isEmpty(channelDesc)) {
         channelDesc = Constants.NOT_CHANNEL_DESC
       }
-      val channel = NotificationChannel(channelId, channelName,  NotificationManager.IMPORTANCE_HIGH)
+      val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
       channel.description = channelDesc
-      channel.setShowBadge(false)
       channel.setBypassDnd(true)
-      channel.vibrationPattern = longArrayOf(0,100);
+      channel.vibrationPattern = longArrayOf(0, 100);
       channel.lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
       // Register the channel with the system
       val manager = (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
@@ -87,9 +87,15 @@ object VoisekNotification {
         CallScreeningService.MODE_PRIVATE
       )
       var notName =
-        sharedPreferencesNotData.getString(Constants.NOT_NAME_LISTENING_INIT_KEY, Constants.NOT_NAME_LISTENING_INIT)
+        sharedPreferencesNotData.getString(
+          Constants.NOT_NAME_LISTENING_INIT_KEY,
+          Constants.NOT_NAME_LISTENING_INIT
+        )
       var notDesc =
-        sharedPreferencesNotData.getString(Constants.NOT_DESC_LISTENING_INIT_KEY, Constants.NOT_DESC_LISTENING_INIT)
+        sharedPreferencesNotData.getString(
+          Constants.NOT_DESC_LISTENING_INIT_KEY,
+          Constants.NOT_DESC_LISTENING_INIT
+        )
       if (notName == null || TextUtils.isEmpty(notName)) {
         notName = Constants.NOT_NAME_LISTENING_INIT
       }
@@ -120,9 +126,15 @@ object VoisekNotification {
         CallScreeningService.MODE_PRIVATE
       )
       var notName =
-        sharedPreferencesNotData.getString(Constants.NOT_NAME_LISTENING_END_KEY, Constants.NOT_NAME_LISTENING_END)
+        sharedPreferencesNotData.getString(
+          Constants.NOT_NAME_LISTENING_END_KEY,
+          Constants.NOT_NAME_LISTENING_END
+        )
       var notDesc =
-        sharedPreferencesNotData.getString(Constants.NOT_DESC_LISTENING_END_KEY, Constants.NOT_DESC_LISTENING_END)
+        sharedPreferencesNotData.getString(
+          Constants.NOT_DESC_LISTENING_END_KEY,
+          Constants.NOT_DESC_LISTENING_END
+        )
       if (notName == null || TextUtils.isEmpty(notName)) {
         notName = Constants.NOT_NAME_LISTENING_END
       }
@@ -152,41 +164,61 @@ object VoisekNotification {
     notName: String,
     notDesc: String
   ): Notification {
-    val builder = NotificationCompat.Builder(context, Constants.NOT_CHANNEL_ID)
-      .setSmallIcon(resourceId)
-      .setDefaults(NotificationCompat.DEFAULT_ALL)
-      .setContentTitle(notName)
-      .setContentText(notDesc)
-      .setColor(Color.RED)
-      .setColorized(true)
-      .setAutoCancel(true)
-      .setVibrate(longArrayOf(0,100))
-      .setPriority(NotificationCompat.PRIORITY_HIGH)
-      .setCategory(NotificationCompat.CATEGORY_CALL)
-      .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-    if (pendingIntent !== null) {
-      //builder.setContentIntent(pendingIntent)
-      builder.setFullScreenIntent(pendingIntent, true)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val builder = Notification.Builder(context, Constants.NOT_CHANNEL_ID)
+        .setSmallIcon(resourceId)
+        .setContentTitle(notName)
+        .setContentText(notDesc)
+        .setColor(Color.RED)
+        .setColorized(true)
+        .setAutoCancel(true)
+        .setVisibility(Notification.VISIBILITY_PUBLIC)
+      if (pendingIntent !== null) {
+        builder.setContentIntent(pendingIntent)
+        builder.setFullScreenIntent(pendingIntent, true)
+      }
+      if (Build.VERSION.SDK_INT >= 31) {
+        builder.setCategory(Notification.CATEGORY_CALL)
+      }else{
+        builder.setCategory(Notification.CATEGORY_SYSTEM)
+      }
+      return builder.build()
     }
-    return builder.build()
+    else{
+      val builder = NotificationCompat.Builder(context, Constants.NOT_CHANNEL_ID)
+        .setSmallIcon(resourceId)
+        .setDefaults(NotificationCompat.DEFAULT_ALL)
+        .setContentTitle(notName)
+        .setContentText(notDesc)
+        .setColor(Color.RED)
+        .setColorized(true)
+        .setAutoCancel(true)
+        .setVibrate(longArrayOf(0, 100))
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setCategory(NotificationCompat.CATEGORY_SYSTEM)
+        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+      if (pendingIntent !== null) {
+        builder.setContentIntent(pendingIntent)
+        builder.setFullScreenIntent(pendingIntent, true)
+      }
+      return builder.build()
+    }
   }
 
   private fun getPendingIntent(context: Context): PendingIntent? {
-    val fakeIntent = Intent()
-    return PendingIntent.getActivity(context, 1, fakeIntent, PendingIntent.FLAG_ONE_SHOT)
-    /*
-    val mainActivityClass = getMainActivityClass(context)
-    val fullScreenIntent: Intent? = Intent(context, mainActivityClass)
-    if (fullScreenIntent != null) {
-      fullScreenIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_SINGLE_TOP
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      val fullScreenIntent = Intent()
+      return PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+    } else {
+      val mainActivityClass = getMainActivityClass(context)
+      val fullScreenIntent: Intent? = Intent(context, mainActivityClass)
+      return PendingIntent.getActivity(
+        context,
+        0,
+        fullScreenIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+      )
     }
-    return PendingIntent.getActivity(
-      context,
-      0,
-      fullScreenIntent,
-      PendingIntent.FLAG_UPDATE_CURRENT
-    )
-     */
   }
 
   private fun getMainActivityClass(context: Context): Class<*>? {
