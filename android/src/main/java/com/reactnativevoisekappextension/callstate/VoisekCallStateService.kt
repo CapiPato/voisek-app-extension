@@ -44,7 +44,7 @@ class VoisekCallStateService : BroadcastReceiver() {
         }
         if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
           if (currentNumber != null) {
-            invokeCallHeadlessTask(context, "disconnected", currentNumber)
+            invokeCallHeadlessTask(context, "disconnected", null)
             currentNumber = null
           }
         }
