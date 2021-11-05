@@ -39,13 +39,13 @@ class VoisekCallStateService : BroadcastReceiver() {
         if ((state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK))) {
           if (currentNumber != null) {
             currentNumber = null
-            invokeCallHeadlessTask(context, "offhook", null)
+            invokeCallHeadlessTask(context, "offhook", phoneNumber)
           }
         }
         if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
           if (currentNumber != null) {
             currentNumber = null
-            invokeCallHeadlessTask(context, "disconnected", null)
+            invokeCallHeadlessTask(context, "disconnected", phoneNumber)
           }
         }
       }
