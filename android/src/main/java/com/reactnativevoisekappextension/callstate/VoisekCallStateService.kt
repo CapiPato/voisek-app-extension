@@ -38,14 +38,14 @@ class VoisekCallStateService : BroadcastReceiver() {
         }
         if ((state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK))) {
           if (currentNumber != null) {
+            invokeCallHeadlessTask(context, "offhook", currentNumber)
             currentNumber = null
-            invokeCallHeadlessTask(context, "offhook", phoneNumber)
           }
         }
         if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
           if (currentNumber != null) {
+            invokeCallHeadlessTask(context, "disconnected", currentNumber)
             currentNumber = null
-            invokeCallHeadlessTask(context, "disconnected", phoneNumber)
           }
         }
       }
