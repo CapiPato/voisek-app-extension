@@ -1,12 +1,13 @@
 import { NativeModules } from 'react-native';
 
-type VoisekAppExtension = {
+interface VoisekAppExtensionType {
   initCallService(
     requestCallService: boolean,
     callbackSuccess: Function,
     callbackFail: Function
   ): void;
   setNotificationData(
+    timerForNotToShow?: number,
     listeningChannelTitle?: string,
     listeningChannelDesc?: string,
     listeningStartNotTitle?: string,
@@ -19,8 +20,10 @@ type VoisekAppExtension = {
   doActiveBlockCallOnList(active: boolean): void;
   addBlockingPhoneNumbers(blockingPhoneNumbers: any[]): Promise<any>;
   showAFullScreenNotification(title: string, desc: string): void;
-};
+}
 
 const { VoisekAppExtension } = NativeModules;
 
-export { VoisekAppExtension as VoisekAppExtension };
+const VoisekAppExtensionModule = VoisekAppExtension as VoisekAppExtensionType;
+
+export { VoisekAppExtensionModule as VoisekAppExtension };

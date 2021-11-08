@@ -89,6 +89,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun setNotificationData(
+    timerForNotToShow: Int?,
     listeningChannelTitle: String?,
     listeningChannelDesc: String?,
     listeningStartNotTitle: String?,
@@ -101,6 +102,14 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       Context.MODE_PRIVATE
     )
     val editorNotData = sharedPreferencesNotData.edit()
+
+    if (timerForNotToShow != null && timerForNotToShow != 0) {
+      editorNotData.putLong(Constants.NOT_TIMER_SHOW_KEY, timerForNotToShow.toLong())
+    }
+    else{
+      editorNotData.putLong(Constants.NOT_TIMER_SHOW_KEY, Constants.NOT_TIMER_SHOW.toLong())
+    }
+
     if (listeningChannelTitle != null && !TextUtils.isEmpty(listeningChannelTitle)) {
       editorNotData.putString(Constants.NOT_CHANNEL_NAME_KEY, listeningChannelTitle)
     }

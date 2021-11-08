@@ -1,6 +1,7 @@
 package com.reactnativevoisekappextension.notification
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
@@ -43,7 +44,14 @@ class VoisekNotificationService : Service() {
               notificationManager.cancelAll()
               stopForeground(true)
               if (notification != null) {
-                Timer("SendingNot", false).schedule(1000) {
+                val sharedPreferencesNotData = this.getSharedPreferences(
+                  Constants.NOT_SHARED_PREF_DATA,
+                  Context.MODE_PRIVATE
+                )
+                val scheduleTime = sharedPreferencesNotData.getLong(Constants.NOT_TIMER_SHOW_KEY,
+                  Constants.NOT_TIMER_SHOW.toLong()
+                )
+                Timer("SendingNot", false).schedule(scheduleTime) {
                   notificationManager.notify(Constants.NOT_ID, notification)
                   startForeground(
                     Constants.NOT_ID,
