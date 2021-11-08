@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.telecom.CallScreeningService
 import android.text.TextUtils
 import android.util.Log
 import com.facebook.react.HeadlessJsTaskService
@@ -272,6 +273,34 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     return sharedPreferencesRequestData.getBoolean(Constants.OPTION_CAN_REQUEST_ROLE, false)
   }
 
+  private fun isCanCallCheck(): Boolean {
+    val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
+      Constants.CALLER_OPTIONS_KEY,
+      CallScreeningService.MODE_PRIVATE
+    )
+    return sharedPreferencesOptions.getBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, false)
+  }
+
+  private fun keepOnBackground(){
+    if(isCanCallCheck()) {
+      try {
+        val service =
+          Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
+        val bundle = Bundle()
+        bundle.putString("goingBackground", "goingBackground")
+        service.putExtras(bundle)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          reactApplicationContext?.startForegroundService(service)
+        } else {
+          reactApplicationContext?.startService(service)
+        }
+        HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext)
+      } catch (ex: IllegalStateException) {
+        Log.e("Life", "ERROR", ex)
+      }
+    }
+  }
+
   override fun onActivityResult(
     activity: Activity,
     requestCode: Int,
@@ -336,38 +365,13 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun onHostPause() {
     Log.d("Life", "onHostPause")
-    try {
-      val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
-      val bundle = Bundle()
-      bundle.putString("goingBackground", "goingBackground")
-      service.putExtras(bundle)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        reactApplicationContext?.startForegroundService(service)
-      } else {
-        reactApplicationContext?.startService(service)
-      }
-      HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext)
-    } catch (ex: IllegalStateException) {
-      Log.e("Life", "ERROR", ex)
-    }
+    keepOnBackground()
+
   }
 
   override fun onHostDestroy() {
     Log.d("Life", "onHostDestroy")
-    try {
-      val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
-      val bundle = Bundle()
-      bundle.putString("goingBackground", "goingBackground")
-      service.putExtras(bundle)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        reactApplicationContext?.startForegroundService(service)
-      } else {
-        reactApplicationContext?.startService(service)
-      }
-      HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext)
-    } catch (ex: IllegalStateException) {
-      Log.e("Life", "ERROR", ex)
-    }
+    keepOnBackground()
   }
 
 }

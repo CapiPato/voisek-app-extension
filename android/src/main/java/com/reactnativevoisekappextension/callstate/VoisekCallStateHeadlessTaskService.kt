@@ -28,7 +28,7 @@ class VoisekCallStateHeadlessTaskService : HeadlessJsTaskService() {
       HeadlessJsTaskConfig(
         "AndroidCallStateTask",
         Arguments.fromBundle(extras),
-        1300,
+        0,
         true
       )
     } else return null

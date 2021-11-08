@@ -8,11 +8,19 @@ type CallData = {
 async function CallStateTask({ phoneNumber, event }: CallData) {
   console.log(event, phoneNumber);
   VoisekAppExtension.cancelNotifications();
-  if (event === 'incoming') {
-    VoisekAppExtension.showAFullScreenNotification(
-      `${event}`,
-      `${event}: ${phoneNumber}`
-    );
+  if (
+    event !== null ||
+    event !== undefined ||
+    phoneNumber !== null ||
+    phoneNumber !== undefined
+  ) {
+    if (event === 'incoming') {
+      VoisekAppExtension.showAFullScreenNotification(
+        `${event}`,
+        `${event}: ${phoneNumber}`
+      );
+    }
+    return Promise.resolve();
   }
 }
 
