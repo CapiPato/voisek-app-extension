@@ -34,6 +34,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     Manifest.permission.READ_PHONE_STATE
   )
   private var isOnPlay = true;
+  private var isOnInit = false;
 
   override fun initialize() {
     super.initialize()
@@ -62,6 +63,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       if (it == null) {
         callbackFail?.invoke("Fail")
       } else {
+        isOnInit = true
         mainActivity = it
         callbackSuccessInitCallService = callbackSuccess
         callbackFailInitCallService = callbackFail
@@ -262,9 +264,11 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       } catch (e: Exception) {
         Log.e("ROLE", e.localizedMessage)
         callbackFailInitCallService?.invoke()
+        isOnInit = false
       }
     } else {
       callbackSuccessInitCallService?.invoke()
+      isOnInit = false
     }
   }
 
@@ -296,6 +300,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
           reactApplicationContext?.startService(service)
         }
         HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext)
+        Log.d("Life", "CALL BACKGROUND")
       } catch (ex: IllegalStateException) {
         Log.e("Life", "ERROR", ex)
       }
@@ -311,8 +316,10 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     if (requestCode == Constants.REQUEST_ID_BECOME_CALL_SCREENER) {
       if (resultCode != 0) {
         callbackSuccessInitCallService?.invoke()
+        isOnInit = false
       } else {
         callbackFailInitCallService?.invoke()
+        isOnInit = false
       }
     }
   }
@@ -348,9 +355,11 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
           requestRole()
         } else {
           callbackSuccessInitCallService?.invoke()
+          isOnInit = false
         }
       } else {
         callbackFailInitCallService?.invoke()
+        isOnInit = false
       }
     }
     return true
@@ -367,7 +376,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun onHostPause() {
     Log.d("Life", "onHostPause")
-    if(isOnPlay) {
+    if(isOnPlay && !isOnInit) {
       keepOnBackground()
       isOnPlay = false
     }
@@ -375,7 +384,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun onHostDestroy() {
     Log.d("Life", "onHostDestroy")
-    if(isOnPlay) {
+    if(isOnPlay && !isOnInit) {
       keepOnBackground()
       isOnPlay = false
     }

@@ -21,17 +21,7 @@ class VoisekNotificationService : Service() {
     Log.d(VoisekNotification.TAG, "onStartCommand")
     val action = intent!!.action
     if (action != null) {
-      if (action == Constants.NOT_ACTION_FOREGROUND_SERVICE_START) {
-        // Send a notification that service is started
-        Log.d(VoisekNotification.TAG, "VOISEK_ACTION_FOREGROUND_SERVICE_START")
-        //invokeCallHeadlessTask()
-        val notificationManager: NotificationManagerCompat =
-          VoisekNotification.createFullScreenCallNotificationChannel(this)
-        notificationManager.cancelAll()
-        stopForeground(true)
-        val notification = VoisekNotification.createNotificationListeningStart(this)
-        startForeground(Constants.NOT_FOREGROUND_ID, notification)
-      } else if (action == Constants.NOT_ACTION_FOREGROUND_SHOW_NOT) {
+      if (action == Constants.NOT_ACTION_FOREGROUND_SHOW_NOT) {
         val extras = intent.extras
         if (extras != null) {
           if (extras.containsKey("title") && extras.containsKey("desc")) {
@@ -61,11 +51,10 @@ class VoisekNotificationService : Service() {
               }
             }
           }
-
         }
       }
     }
-    return START_STICKY_COMPATIBILITY
+    return START_STICKY
   }
 
   override fun onDestroy() {
