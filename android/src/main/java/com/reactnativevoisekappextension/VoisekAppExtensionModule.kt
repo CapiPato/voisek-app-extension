@@ -33,6 +33,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     Manifest.permission.READ_CALL_LOG,
     Manifest.permission.READ_PHONE_STATE
   )
+  private var isOnPlay = true;
 
   override fun initialize() {
     super.initialize()
@@ -361,17 +362,23 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun onHostResume() {
     Log.d("Life", "onHostResume")
+    isOnPlay = true
   }
 
   override fun onHostPause() {
     Log.d("Life", "onHostPause")
-    keepOnBackground()
-
+    if(isOnPlay) {
+      keepOnBackground()
+      isOnPlay = false
+    }
   }
 
   override fun onHostDestroy() {
     Log.d("Life", "onHostDestroy")
-    keepOnBackground()
+    if(isOnPlay) {
+      keepOnBackground()
+      isOnPlay = false
+    }
   }
 
 }
