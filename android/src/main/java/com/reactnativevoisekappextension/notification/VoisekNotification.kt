@@ -79,6 +79,45 @@ object VoisekNotification {
     return null
   }
 
+  fun createNotificationListeningBackground(context: Context): Notification? {
+    if (context != null) {
+      Log.d(TAG, "createNotificationBlank")
+      val sharedPreferencesNotData = context.getSharedPreferences(
+        Constants.NOT_SHARED_PREF_DATA,
+        CallScreeningService.MODE_PRIVATE
+      )
+      var notName =
+        sharedPreferencesNotData.getString(
+          Constants.NOT_NAME_LISTENING_BACKGROUND_KEY,
+          Constants.NOT_NAME_LISTENING_BACKGROUND
+        )
+      var notDesc =
+        sharedPreferencesNotData.getString(
+          Constants.NOT_DESC_LISTENING_BACKGROUND_KEY,
+          Constants.NOT_DESC_LISTENING_BACKGROUND
+        )
+      if (notName == null || TextUtils.isEmpty(notName)) {
+        notName = Constants.NOT_NAME_LISTENING_BACKGROUND
+      }
+      if (notDesc == null || TextUtils.isEmpty(notDesc)) {
+        notDesc = Constants.NOT_DESC_LISTENING_BACKGROUND
+      }
+
+      val resourceId: Int =
+        context.resources.getIdentifier("ic_launcher", "mipmap", context.packageName)
+      createFullScreenCallNotificationChannel(context)
+      val pendingIntent = getPendingIntent(context)
+      return createFullScreenCallNotification(
+        context,
+        pendingIntent,
+        resourceId,
+        notName,
+        notDesc
+      )
+    }
+    return null
+  }
+
   fun createNotificationListeningStart(context: Context): Notification? {
     if (context != null) {
       Log.d(TAG, "createNotificationBlank")

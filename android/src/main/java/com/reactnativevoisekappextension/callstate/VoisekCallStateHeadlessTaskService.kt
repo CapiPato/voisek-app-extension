@@ -1,6 +1,7 @@
 package com.reactnativevoisekappextension.callstate
 
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.bridge.Arguments
@@ -14,18 +15,28 @@ class VoisekCallStateHeadlessTaskService : HeadlessJsTaskService() {
   override fun getTaskConfig(intent: Intent): HeadlessJsTaskConfig? {
     val extras = intent.extras
     return if (extras != null) {
-      if(extras.containsKey("phoneNumber")){
-        createNotificationListeningStart()
-      }else{
-        createNotificationListeningEnd();
+      if (extras.containsKey("goingBackground")) {
+        Log.d("phoneStateService", "goingBackground")
+        createNotificationListeningBackground();
+      } else {
+        if (extras.containsKey("phoneNumber")) {
+          createNotificationListeningStart()
+        } else {
+          createNotificationListeningEnd();
+        }
       }
       HeadlessJsTaskConfig(
         "AndroidCallStateTask",
         Arguments.fromBundle(extras),
-        500,
+        1300,
         true
       )
     } else return null
+  }
+
+  private fun createNotificationListeningBackground() {
+    val notification = VoisekNotification.createNotificationListeningBackground(this)
+    startForeground(Constants.NOT_FOREGROUND_ID, notification)
   }
 
   private fun createNotificationListeningStart() {

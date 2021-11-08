@@ -25,7 +25,17 @@ export default function App() {
     VoisekAppExtension.initCallService(
       true,
       () => {
-        VoisekAppExtension.setNotificationData(2100, '', '', '', '', '', '');
+        VoisekAppExtension.setNotificationData(
+          2100,
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+          ''
+        );
         setIsInitialized(true);
       },
       () => {

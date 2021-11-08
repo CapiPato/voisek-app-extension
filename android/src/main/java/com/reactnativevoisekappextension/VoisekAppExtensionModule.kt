@@ -7,12 +7,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
+import com.reactnativevoisekappextension.callstate.VoisekCallStateHeadlessTaskService
 import com.reactnativevoisekappextension.notification.VoisekNotificationService
 import com.reactnativevoisekappextension.utils.Constants
 
@@ -92,6 +95,8 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     timerForNotToShow: Int?,
     listeningChannelTitle: String?,
     listeningChannelDesc: String?,
+    listeningBackgroundNotTitle: String?,
+    listeningBackgroundNotDesc: String?,
     listeningStartNotTitle: String?,
     listeningStartNotDesc: String?,
     listeningEndNotTitle: String?,
@@ -103,6 +108,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     )
     val editorNotData = sharedPreferencesNotData.edit()
 
+    //Timer for Not to show
     if (timerForNotToShow != null && timerForNotToShow != 0) {
       editorNotData.putLong(Constants.NOT_TIMER_SHOW_KEY, timerForNotToShow.toLong())
     }
@@ -110,13 +116,13 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       editorNotData.putLong(Constants.NOT_TIMER_SHOW_KEY, Constants.NOT_TIMER_SHOW.toLong())
     }
 
+    //Notification Channel Text
     if (listeningChannelTitle != null && !TextUtils.isEmpty(listeningChannelTitle)) {
       editorNotData.putString(Constants.NOT_CHANNEL_NAME_KEY, listeningChannelTitle)
     }
     else{
       editorNotData.putString(Constants.NOT_CHANNEL_NAME_KEY, Constants.NOT_CHANNEL_NAME)
     }
-
     if (listeningChannelDesc != null && !TextUtils.isEmpty(listeningChannelDesc)) {
       editorNotData.putString(Constants.NOT_CHANNEL_DESC_KEY, listeningChannelDesc)
     }
@@ -124,13 +130,27 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       editorNotData.putString(Constants.NOT_CHANNEL_DESC_KEY, Constants.NOT_CHANNEL_DESC)
     }
 
+    //Going background Notification Text
+    if (listeningBackgroundNotTitle != null && !TextUtils.isEmpty(listeningBackgroundNotTitle)) {
+      editorNotData.putString(Constants.NOT_NAME_LISTENING_BACKGROUND_KEY, listeningBackgroundNotTitle)
+    }
+    else{
+      editorNotData.putString(Constants.NOT_NAME_LISTENING_BACKGROUND_KEY, Constants.NOT_NAME_LISTENING_BACKGROUND)
+    }
+    if (listeningBackgroundNotDesc != null && !TextUtils.isEmpty(listeningBackgroundNotDesc)) {
+      editorNotData.putString(Constants.NOT_DESC_LISTENING_BACKGROUND_KEY, listeningBackgroundNotDesc)
+    }
+    else{
+      editorNotData.putString(Constants.NOT_DESC_LISTENING_BACKGROUND_KEY, Constants.NOT_DESC_LISTENING_BACKGROUND)
+    }
+
+    //Start Listening Notification Text
     if (listeningStartNotTitle != null && !TextUtils.isEmpty(listeningStartNotTitle)) {
       editorNotData.putString(Constants.NOT_NAME_LISTENING_INIT_KEY, listeningStartNotTitle)
     }
     else{
       editorNotData.putString(Constants.NOT_NAME_LISTENING_INIT_KEY, Constants.NOT_NAME_LISTENING_INIT)
     }
-
     if (listeningStartNotDesc != null && !TextUtils.isEmpty(listeningStartNotDesc)) {
       editorNotData.putString(Constants.NOT_DESC_LISTENING_INIT_KEY, listeningStartNotDesc)
     }
@@ -138,13 +158,13 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       editorNotData.putString(Constants.NOT_DESC_LISTENING_INIT_KEY, Constants.NOT_DESC_LISTENING_INIT)
     }
 
+    //End Listening Notification Text
     if (listeningEndNotTitle != null && !TextUtils.isEmpty(listeningEndNotTitle)) {
       editorNotData.putString(Constants.NOT_NAME_LISTENING_END_KEY, listeningEndNotTitle)
     }
     else{
       editorNotData.putString(Constants.NOT_NAME_LISTENING_END_KEY, Constants.NOT_NAME_LISTENING_END)
     }
-
     if (listeningEndNotDesc != null && !TextUtils.isEmpty(listeningEndNotDesc)) {
       editorNotData.putString(Constants.NOT_DESC_LISTENING_END_KEY, listeningEndNotDesc)
     }
@@ -316,10 +336,38 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun onHostPause() {
     Log.d("Life", "onHostPause")
+    try {
+      val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
+      val bundle = Bundle()
+      bundle.putString("goingBackground", "goingBackground")
+      service.putExtras(bundle)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        reactApplicationContext?.startForegroundService(service)
+      } else {
+        reactApplicationContext?.startService(service)
+      }
+      HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext)
+    } catch (ex: IllegalStateException) {
+      Log.e("Life", "ERROR", ex)
+    }
   }
 
   override fun onHostDestroy() {
     Log.d("Life", "onHostDestroy")
+    try {
+      val service = Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
+      val bundle = Bundle()
+      bundle.putString("goingBackground", "goingBackground")
+      service.putExtras(bundle)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        reactApplicationContext?.startForegroundService(service)
+      } else {
+        reactApplicationContext?.startService(service)
+      }
+      HeadlessJsTaskService.acquireWakeLockNow(reactApplicationContext)
+    } catch (ex: IllegalStateException) {
+      Log.e("Life", "ERROR", ex)
+    }
   }
 
 }

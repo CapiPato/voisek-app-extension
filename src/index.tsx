@@ -10,6 +10,8 @@ interface VoisekAppExtensionType {
     timerForNotToShow?: number,
     listeningChannelTitle?: string,
     listeningChannelDesc?: string,
+    listeningBackgroundNotTitle?: string,
+    listeningBackgroundNotDesc?: string,
     listeningStartNotTitle?: string,
     listeningStartNotDesc?: string,
     listeningEndNotTitle?: string,
