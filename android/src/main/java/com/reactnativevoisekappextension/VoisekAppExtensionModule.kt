@@ -19,6 +19,8 @@ import com.facebook.react.modules.core.PermissionListener
 import com.reactnativevoisekappextension.callstate.VoisekCallStateHeadlessTaskService
 import com.reactnativevoisekappextension.notification.VoisekNotificationService
 import com.reactnativevoisekappextension.utils.Constants
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 @ReactModule(name = VoisekAppExtensionModule.NAME)
@@ -67,7 +69,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
         mainActivity = it
         callbackSuccessInitCallService = callbackSuccess
         callbackFailInitCallService = callbackFail
-        cancelNotifications()
+        cancelNotifications(0)
         val sharedPreferencesOptions = reactApplicationContext.getSharedPreferences(
           Constants.CALLER_OPTIONS_KEY,
           Context.MODE_PRIVATE
@@ -96,7 +98,6 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun setNotificationData(
-    timerForNotToShow: Int?,
     listeningChannelTitle: String?,
     listeningChannelDesc: String?,
     listeningBackgroundNotTitle: String?,
@@ -112,68 +113,76 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     )
     val editorNotData = sharedPreferencesNotData.edit()
 
-    //Timer for Not to show
-    if (timerForNotToShow != null && timerForNotToShow != 0) {
-      editorNotData.putLong(Constants.NOT_TIMER_SHOW_KEY, timerForNotToShow.toLong())
-    }
-    else{
-      editorNotData.putLong(Constants.NOT_TIMER_SHOW_KEY, Constants.NOT_TIMER_SHOW.toLong())
-    }
-
     //Notification Channel Text
     if (listeningChannelTitle != null && !TextUtils.isEmpty(listeningChannelTitle)) {
       editorNotData.putString(Constants.NOT_CHANNEL_NAME_KEY, listeningChannelTitle)
-    }
-    else{
+    } else {
       editorNotData.putString(Constants.NOT_CHANNEL_NAME_KEY, Constants.NOT_CHANNEL_NAME)
     }
     if (listeningChannelDesc != null && !TextUtils.isEmpty(listeningChannelDesc)) {
       editorNotData.putString(Constants.NOT_CHANNEL_DESC_KEY, listeningChannelDesc)
-    }
-    else{
+    } else {
       editorNotData.putString(Constants.NOT_CHANNEL_DESC_KEY, Constants.NOT_CHANNEL_DESC)
     }
 
     //Going background Notification Text
     if (listeningBackgroundNotTitle != null && !TextUtils.isEmpty(listeningBackgroundNotTitle)) {
-      editorNotData.putString(Constants.NOT_NAME_LISTENING_BACKGROUND_KEY, listeningBackgroundNotTitle)
-    }
-    else{
-      editorNotData.putString(Constants.NOT_NAME_LISTENING_BACKGROUND_KEY, Constants.NOT_NAME_LISTENING_BACKGROUND)
+      editorNotData.putString(
+        Constants.NOT_NAME_LISTENING_BACKGROUND_KEY,
+        listeningBackgroundNotTitle
+      )
+    } else {
+      editorNotData.putString(
+        Constants.NOT_NAME_LISTENING_BACKGROUND_KEY,
+        Constants.NOT_NAME_LISTENING_BACKGROUND
+      )
     }
     if (listeningBackgroundNotDesc != null && !TextUtils.isEmpty(listeningBackgroundNotDesc)) {
-      editorNotData.putString(Constants.NOT_DESC_LISTENING_BACKGROUND_KEY, listeningBackgroundNotDesc)
-    }
-    else{
-      editorNotData.putString(Constants.NOT_DESC_LISTENING_BACKGROUND_KEY, Constants.NOT_DESC_LISTENING_BACKGROUND)
+      editorNotData.putString(
+        Constants.NOT_DESC_LISTENING_BACKGROUND_KEY,
+        listeningBackgroundNotDesc
+      )
+    } else {
+      editorNotData.putString(
+        Constants.NOT_DESC_LISTENING_BACKGROUND_KEY,
+        Constants.NOT_DESC_LISTENING_BACKGROUND
+      )
     }
 
     //Start Listening Notification Text
     if (listeningStartNotTitle != null && !TextUtils.isEmpty(listeningStartNotTitle)) {
       editorNotData.putString(Constants.NOT_NAME_LISTENING_INIT_KEY, listeningStartNotTitle)
-    }
-    else{
-      editorNotData.putString(Constants.NOT_NAME_LISTENING_INIT_KEY, Constants.NOT_NAME_LISTENING_INIT)
+    } else {
+      editorNotData.putString(
+        Constants.NOT_NAME_LISTENING_INIT_KEY,
+        Constants.NOT_NAME_LISTENING_INIT
+      )
     }
     if (listeningStartNotDesc != null && !TextUtils.isEmpty(listeningStartNotDesc)) {
       editorNotData.putString(Constants.NOT_DESC_LISTENING_INIT_KEY, listeningStartNotDesc)
-    }
-    else{
-      editorNotData.putString(Constants.NOT_DESC_LISTENING_INIT_KEY, Constants.NOT_DESC_LISTENING_INIT)
+    } else {
+      editorNotData.putString(
+        Constants.NOT_DESC_LISTENING_INIT_KEY,
+        Constants.NOT_DESC_LISTENING_INIT
+      )
     }
 
     //End Listening Notification Text
     if (listeningEndNotTitle != null && !TextUtils.isEmpty(listeningEndNotTitle)) {
       editorNotData.putString(Constants.NOT_NAME_LISTENING_END_KEY, listeningEndNotTitle)
-    }
-    else{
-      editorNotData.putString(Constants.NOT_NAME_LISTENING_END_KEY, Constants.NOT_NAME_LISTENING_END)
+    } else {
+      editorNotData.putString(
+        Constants.NOT_NAME_LISTENING_END_KEY,
+        Constants.NOT_NAME_LISTENING_END
+      )
     }
     if (listeningEndNotDesc != null && !TextUtils.isEmpty(listeningEndNotDesc)) {
       editorNotData.putString(Constants.NOT_DESC_LISTENING_END_KEY, listeningEndNotDesc)
-    }
-    else{
-      editorNotData.putString(Constants.NOT_DESC_LISTENING_END_KEY, Constants.NOT_DESC_LISTENING_END)
+    } else {
+      editorNotData.putString(
+        Constants.NOT_DESC_LISTENING_END_KEY,
+        Constants.NOT_DESC_LISTENING_END
+      )
     }
 
     editorNotData.apply()
@@ -232,21 +241,25 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun cancelNotifications() {
-    val stopService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
-    reactApplicationContext.stopService(stopService)
+  fun cancelNotifications(timerForNotToCancel: Int) {
+    Timer("CancelNot", false).schedule(timerForNotToCancel.toLong()) {
+      val stopService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
+      reactApplicationContext.stopService(stopService)
+    }
   }
 
   @ReactMethod
-  fun showAFullScreenNotification(title: String, desc: String) {
-    val notService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
-    notService.action = Constants.NOT_ACTION_FOREGROUND_SHOW_NOT;
-    notService.putExtra("title", title);
-    notService.putExtra("desc", desc);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      reactApplicationContext.startForegroundService(notService)
-    } else {
-      reactApplicationContext.startService(notService)
+  fun showAFullScreenNotification(title: String, desc: String, timerForNotToShow: Int) {
+    Timer("SendingNot", false).schedule(timerForNotToShow.toLong()) {
+      val notService = Intent(reactApplicationContext, VoisekNotificationService::class.java)
+      notService.action = Constants.NOT_ACTION_FOREGROUND_SHOW_NOT;
+      notService.putExtra("title", title);
+      notService.putExtra("desc", desc);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        reactApplicationContext.startForegroundService(notService)
+      } else {
+        reactApplicationContext.startService(notService)
+      }
     }
   }
 
@@ -286,8 +299,8 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     return sharedPreferencesOptions.getBoolean(Constants.OPTION_CAN_CHECK_CALL_STATE, false)
   }
 
-  private fun keepOnBackground(){
-    if(isCanCallCheck()) {
+  private fun keepOnBackground() {
+    if (isCanCallCheck()) {
       try {
         val service =
           Intent(reactApplicationContext, VoisekCallStateHeadlessTaskService::class.java)
@@ -376,7 +389,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun onHostPause() {
     Log.d("Life", "onHostPause")
-    if(isOnPlay && !isOnInit) {
+    if (isOnPlay && !isOnInit) {
       keepOnBackground()
       isOnPlay = false
     }
@@ -384,7 +397,7 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   override fun onHostDestroy() {
     Log.d("Life", "onHostDestroy")
-    if(isOnPlay && !isOnInit) {
+    if (isOnPlay && !isOnInit) {
       keepOnBackground()
       isOnPlay = false
     }

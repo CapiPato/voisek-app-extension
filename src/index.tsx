@@ -7,7 +7,6 @@ interface VoisekAppExtensionType {
     callbackFail: Function
   ): void;
   setNotificationData(
-    timerForNotToShow?: number,
     listeningChannelTitle?: string,
     listeningChannelDesc?: string,
     listeningBackgroundNotTitle?: string,
@@ -18,10 +17,14 @@ interface VoisekAppExtensionType {
     listeningEndNotDesc?: string
   ): void;
   stopCallService(): void;
-  cancelNotifications(): void;
+  cancelNotifications(timerForNotToCancel?: number): void;
   doActiveBlockCallOnList(active: boolean): void;
   addBlockingPhoneNumbers(blockingPhoneNumbers: any[]): Promise<any>;
-  showAFullScreenNotification(title: string, desc: string): void;
+  showAFullScreenNotification(
+    title: string,
+    desc: string,
+    timerForNotToShow: number
+  ): void;
 }
 
 const { VoisekAppExtension } = NativeModules;

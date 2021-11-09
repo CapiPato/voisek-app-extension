@@ -34,20 +34,11 @@ class VoisekNotificationService : Service() {
               notificationManager.cancelAll()
               stopForeground(true)
               if (notification != null) {
-                val sharedPreferencesNotData = this.getSharedPreferences(
-                  Constants.NOT_SHARED_PREF_DATA,
-                  Context.MODE_PRIVATE
+                notificationManager.notify(Constants.NOT_ID, notification)
+                startForeground(
+                  Constants.NOT_ID,
+                  notification
                 )
-                val scheduleTime = sharedPreferencesNotData.getLong(Constants.NOT_TIMER_SHOW_KEY,
-                  Constants.NOT_TIMER_SHOW.toLong()
-                )
-                Timer("SendingNot", false).schedule(scheduleTime) {
-                  notificationManager.notify(Constants.NOT_ID, notification)
-                  startForeground(
-                    Constants.NOT_ID,
-                    notification
-                  )
-                }
               }
             }
           }
