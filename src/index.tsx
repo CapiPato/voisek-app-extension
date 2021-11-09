@@ -17,7 +17,7 @@ interface VoisekAppExtensionType {
     listeningEndNotDesc?: string
   ): void;
   stopCallService(): void;
-  cancelNotifications(timerForNotToCancel?: number): void;
+  cancelNotifications(timerForNotToCancel: number): void;
   doActiveBlockCallOnList(active: boolean): void;
   addBlockingPhoneNumbers(blockingPhoneNumbers: any[]): Promise<any>;
   showAFullScreenNotification(
