@@ -35,4 +35,5 @@ RCT_EXTERN_METHOD(showAFullScreenNotification:(NSString*)title
                   withDesc: (NSString*)desc
                   withTimerForNotToShow: (NSNumber*)timerForNotToShow)
 
+RCT_EXTERN_METHOD(reloadCallExtension)
 @end

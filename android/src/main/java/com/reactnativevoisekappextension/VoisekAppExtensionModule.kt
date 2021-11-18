@@ -290,6 +290,11 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
     }
   }
 
+  @ReactMethod
+  fun reloadCallExtension(){
+
+  }
+
   private fun requestRole() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && canRequestRole()) {
       try {

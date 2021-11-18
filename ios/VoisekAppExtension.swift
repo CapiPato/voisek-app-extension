@@ -57,12 +57,16 @@ class VoisekAppExtension: NSObject {
     func cancelNotifications(timerForNotToCancel: Int) -> Void {
     }
     
-    @objc(doActiveBlockCallOnList:)
-    func doActiveBlockCallOnList(active: Bool) -> Void {
-        ensureVoisekDefaults().set(active, forKey: OPTION_BLOCK_CALL_ON_BLACK_LIST)
+    @objc(reloadCallExtension)
+    func reloadCallExtension() -> Void {
         CXCallDirectoryManager.sharedInstance.reloadExtension(withIdentifier: directoryExtensionName) { (error) in
             print("reloaded extension: \(String(describing: error))")
         }
+    }
+    
+    @objc(doActiveBlockCallOnList:)
+    func doActiveBlockCallOnList(active: Bool) -> Void {
+        ensureVoisekDefaults().set(active, forKey: OPTION_BLOCK_CALL_ON_BLACK_LIST)
     }
     
     @objc(addBlockingPhoneNumbers:withResolver:withRejecter:)
@@ -75,9 +79,6 @@ class VoisekAppExtension: NSObject {
             }
         }
         ensureVoisekDefaults().set(phoenNumbers, forKey: BLOCKING_PHONE_NUMBERS)
-        CXCallDirectoryManager.sharedInstance.reloadExtension(withIdentifier: directoryExtensionName) { (error) in
-            print("reloaded extension: \(String(describing: error))")
-        }
         resolve("Did Add Blocking")
     }
     
@@ -95,9 +96,6 @@ class VoisekAppExtension: NSObject {
         ensureVoisekDefaults().set(phoenNumbers, forKey: SPAM_PHONE_NUMBERS)
         ensureVoisekDefaults().set(labels, forKey: SPAM_LABELS)
         resolve("Did Add Spam")
-        CXCallDirectoryManager.sharedInstance.reloadExtension(withIdentifier: directoryExtensionName) { (error) in
-            print("reloaded extension: \(String(describing: error))")
-        }
     }
     
     @objc(showAFullScreenNotification:withDesc:
