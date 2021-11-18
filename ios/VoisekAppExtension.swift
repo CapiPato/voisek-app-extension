@@ -69,7 +69,8 @@ class VoisekAppExtension: NSObject {
     func addBlockingPhoneNumbers(blockingPhoneNumbers: Array<AnyObject>, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
         var phoenNumbers: Array<String> = []
         for blockingPhoneNumberData in blockingPhoneNumbers {
-            if let blockingPhoneNumber = blockingPhoneNumberData["phoneNumber"]{
+            if var blockingPhoneNumber = blockingPhoneNumberData["phoneNumber"]{
+                blockingPhoneNumber = (blockingPhoneNumber as! String).replacingOccurrences(of: "+", with: "")
                 phoenNumbers.append(blockingPhoneNumber as! String)
             }
         }
@@ -85,7 +86,8 @@ class VoisekAppExtension: NSObject {
         var phoenNumbers: Array<String> = []
         var labels: Array<String> = []
         for spamPhoneNumberData in spamPhoneNumbers {
-            if let spamPhoneNumber = spamPhoneNumberData["phoneNumber"], let spamLabel = spamPhoneNumberData["label"]{
+            if var spamPhoneNumber = spamPhoneNumberData["phoneNumber"], let spamLabel = spamPhoneNumberData["label"]{
+                spamPhoneNumber = (spamPhoneNumber as! String).replacingOccurrences(of: "+", with: "")
                 phoenNumbers.append(spamPhoneNumber as! String)
                 labels.append(spamLabel as! String)
             }
