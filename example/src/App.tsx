@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Keyboard,
   StyleSheet,
   Switch,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { VoisekAppExtension } from 'react-native-voisek-app-extension';
@@ -12,17 +14,24 @@ import { VoisekAppExtension } from 'react-native-voisek-app-extension';
 export default function App() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isBlockListEnable, setIsBlockListEnable] = useState(false);
-  const [inputNumber, onChangeInputNumber] = useState<string>('');
+  const [inputBlockingNumber, onChangeInputBlockingNumber] =
+    useState<string>('523344458500');
+  const [inputSpamNumber, onChangeInputSpamNumber] =
+    useState<string>('523344458500');
   const toggleSwitchBlockList = () =>
     setIsBlockListEnable((previousState) => !previousState);
 
   useEffect(() => {
-    VoisekAppExtension.doActiveBlockCallOnList(isBlockListEnable);
+    if (isInitialized) {
+      VoisekAppExtension.doActiveBlockCallOnList(isBlockListEnable);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBlockListEnable]);
 
   function TestInitialize() {
     VoisekAppExtension.initCallService(
+      'group.voisekdata',
+      'com.voisekappexample.CallDirectoryHandler',
       true,
       () => {
         VoisekAppExtension.setNotificationData('', '', '', '', '', '', '', '');
@@ -34,57 +43,88 @@ export default function App() {
     );
   }
 
-  async function TestAddNumbers() {
-    await VoisekAppExtension.addBlockingPhoneNumbers([
+  async function TestAddBlockingNumbers() {
+    const response = await VoisekAppExtension.addBlockingPhoneNumbers([
       {
         category: 'block',
-        number: inputNumber,
+        phoneNumber: inputBlockingNumber,
       },
     ]);
+    console.log('TestAddBlockingNumbers', response);
+  }
+
+  async function TestAddSpamNumbers() {
+    const response = await VoisekAppExtension.addSpamPhoneNumbers([
+      {
+        label: 'NUMERO DE SPAM',
+        phoneNumber: inputSpamNumber,
+      },
+    ]);
+    console.log('TestAddSpamNumbers', response);
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        <Text style={styles.titleRed}>{'VoiSek App '}</Text>
-        {'Extension - Test'}
-      </Text>
-      <View style={styles.normalSpace} />
-      <Button
-        onPress={() => {
-          TestInitialize();
-        }}
-        title="Initialize"
-        color="#D0021B"
-        accessibilityLabel="Initialized"
-      />
-      <View style={styles.normalSpace} />
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeInputNumber}
-        value={inputNumber}
-        placeholder="Add Number"
-        keyboardType="phone-pad"
-      />
-      <View style={styles.smallSpace} />
-      <Button
-        onPress={() => {
-          TestAddNumbers();
-        }}
-        title="Add Number"
-        color="#D0021B"
-        accessibilityLabel="Do Add Number"
-        disabled={!isInitialized}
-      />
-      <View style={styles.normalSpace} />
-      <Text style={styles.body}>{`Block: ${inputNumber}`}</Text>
-      <View style={styles.smallSpace} />
-      <Switch
-        onValueChange={toggleSwitchBlockList}
-        value={isBlockListEnable}
-        disabled={!isInitialized && inputNumber !== ''}
-      />
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.title}>
+          <Text style={styles.titleRed}>{'VoiSek App '}</Text>
+          {'Extension - Test'}
+        </Text>
+        <View style={styles.normalSpace} />
+        <Button
+          onPress={() => {
+            TestInitialize();
+          }}
+          title="Initialize"
+          color="#D0021B"
+          accessibilityLabel="Initialized"
+        />
+        <View style={styles.normalSpace} />
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeInputBlockingNumber}
+          value={inputBlockingNumber}
+          placeholder="Add Blocking Number"
+          keyboardType="phone-pad"
+        />
+        <View style={styles.smallSpace} />
+        <Button
+          onPress={() => {
+            TestAddBlockingNumbers();
+          }}
+          title="Add Blocking Number"
+          color="#D0021B"
+          accessibilityLabel="Do Add Blocking Number"
+          disabled={!isInitialized}
+        />
+        <View style={styles.smallSpace} />
+        <Text style={styles.body}>{`Do Block: ${inputBlockingNumber}`}</Text>
+        <View style={styles.smallSpace} />
+        <Switch
+          onValueChange={toggleSwitchBlockList}
+          value={isBlockListEnable}
+          disabled={!isInitialized && inputBlockingNumber !== ''}
+        />
+        <View style={styles.normalSpace} />
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeInputSpamNumber}
+          value={inputSpamNumber}
+          placeholder="Add Spam Number"
+          keyboardType="phone-pad"
+        />
+        <View style={styles.smallSpace} />
+        <Button
+          onPress={() => {
+            TestAddSpamNumbers();
+          }}
+          title="Add Spam Number"
+          color="#D0021B"
+          accessibilityLabel="Do Add Spam Number"
+          disabled={!isInitialized}
+        />
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

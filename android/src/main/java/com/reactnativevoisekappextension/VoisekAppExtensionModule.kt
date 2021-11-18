@@ -56,6 +56,8 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun initCallService(
+    groupAppName: String?,
+    directoryExtensionId: String?,
     requestCallService: Boolean?,
     callbackSuccess: Callback?,
     callbackFail: Callback?
@@ -226,10 +228,35 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
       editorBlockingNumbers.clear()
       for (i in 0 until callerList.size()) {
         val caller = callerList.getMap(i)
-        if (caller != null && caller.hasKey("category") && caller.hasKey("number")) {
+        if (caller != null && caller.hasKey("category") && caller.hasKey("phoneNumber")) {
           val callerName = caller.getString("category")
-          val callerNumber = caller.getString("number")
+          val callerNumber = caller.getString("phoneNumber")
           editorBlockingNumbers.putString(callerNumber, callerName)
+        }
+      }
+      editorBlockingNumbers.apply()
+      promise.resolve("Did Add data")
+    } catch (e: Exception) {
+      Log.e("CALLER_ID", e.localizedMessage)
+      promise.resolve(e.localizedMessage)
+    }
+  }
+
+  @ReactMethod
+  fun addSpamPhoneNumbers(callerList: ReadableArray, promise: Promise) {
+    try {
+      val sharedPreferencesBlockingNumbers = reactApplicationContext.getSharedPreferences(
+        Constants.CALLER_SPAM_KEY,
+        Context.MODE_PRIVATE
+      )
+      val editorBlockingNumbers = sharedPreferencesBlockingNumbers.edit()
+      editorBlockingNumbers.clear()
+      for (i in 0 until callerList.size()) {
+        val caller = callerList.getMap(i)
+        if (caller != null && caller.hasKey("label") && caller.hasKey("phoneNumber")) {
+          val callerNumber = caller.getString("phoneNumber")
+          val callerLabel = caller.getString("label")
+          editorBlockingNumbers.putString(callerNumber, callerLabel)
         }
       }
       editorBlockingNumbers.apply()

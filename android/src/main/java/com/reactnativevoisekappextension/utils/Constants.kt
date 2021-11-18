@@ -2,6 +2,7 @@ package com.reactnativevoisekappextension.utils
 
 object Constants {
   const val CALLER_BLOCK_KEY = "CALLER_BLOCK_LIST"
+  const val CALLER_SPAM_KEY = "CALLER_SPAM_LIST"
   const val CALLER_OPTIONS_KEY = "CALLER_OPTIONS_KEY"
   const val REQUEST_DATA_KEY = "REQUEST_DATA_KEY"
   const val OPTION_BLOCK_CALL_ON_BLACK_LIST = "OPTION_BLOCK_CALL_ON_BLACK_LIST"

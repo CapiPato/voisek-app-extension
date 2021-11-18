@@ -2,6 +2,8 @@ import { NativeModules } from 'react-native';
 
 interface VoisekAppExtensionType {
   initCallService(
+    groupAppName: string,
+    directoryExtensionId: string,
     requestCallService: boolean,
     callbackSuccess: Function,
     callbackFail: Function
@@ -19,7 +21,12 @@ interface VoisekAppExtensionType {
   stopCallService(): void;
   cancelNotifications(timerForNotToCancel: number): void;
   doActiveBlockCallOnList(active: boolean): void;
-  addBlockingPhoneNumbers(blockingPhoneNumbers: any[]): Promise<any>;
+  addBlockingPhoneNumbers(
+    blockingPhoneNumbers: { category: string; phoneNumber: string }[]
+  ): Promise<any>;
+  addSpamPhoneNumbers(
+    blockingPhoneNumbers: { label: string; phoneNumber: string }[]
+  ): Promise<any>;
   showAFullScreenNotification(
     title: string,
     desc: string,
