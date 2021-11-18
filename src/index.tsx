@@ -32,6 +32,7 @@ interface VoisekAppExtensionType {
     desc: string,
     timerForNotToShow: number
   ): void;
+  reloadCallExtension(): void;
 }
 
 const { VoisekAppExtension } = NativeModules;
