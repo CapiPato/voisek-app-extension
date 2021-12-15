@@ -26,7 +26,10 @@ class VoisekCallStateService : BroadcastReceiver() {
     if (isCanCallCheck(context)) {
       val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
       val phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
-      if (currentEvent != state || (phoneNumber != null && currentNumber != phoneNumber)) {
+      if (state == null) {
+        invokeCallHeadlessTask(context, "ongoing", currentNumber)
+        currentNumber = null
+      } else if (currentEvent != state || (phoneNumber != null && currentNumber != phoneNumber)) {
         currentEvent = state
         if (phoneNumber != null) {
           currentNumber = phoneNumber
