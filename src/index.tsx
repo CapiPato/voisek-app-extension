@@ -33,6 +33,7 @@ interface VoisekAppExtensionType {
     timerForNotToShow: number
   ): void;
   reloadCallExtension(): void;
+  checkCallDetection(): Promise<any>;
 }
 
 const { VoisekAppExtension } = NativeModules;

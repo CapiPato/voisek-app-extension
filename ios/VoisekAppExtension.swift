@@ -10,6 +10,7 @@ class VoisekAppExtension: NSObject {
     private var directoryExtensionName: String = "";
     private var voisekSuiteName: String = "";
     private var voisekDefaults: UserDefaults?
+    private var callObserver: CXCallObserver!
     
     func ensureVoisekDefaults() -> UserDefaults {
         guard let def = voisekDefaults else {
@@ -101,5 +102,15 @@ class VoisekAppExtension: NSObject {
     @objc(showAFullScreenNotification:withDesc:
             withTimerForNotToShow:)
     func showAFullScreenNotification(title: String, desc: String, timerForNotToShow: Int) -> Void {
+    }
+    
+    @objc(checkCallDetection:withRejecter:)
+    func checkCallDetection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        for call in CXCallObserver().calls {
+            if call.hasEnded == false {
+                resolve(true)
+            }
+        }
+        resolve(false)
     }
 }

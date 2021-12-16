@@ -63,6 +63,11 @@ export default function App() {
     console.log('TestAddSpamNumbers', response);
   }
 
+  async function TestCheckCallDetection() {
+    const response = await VoisekAppExtension.checkCallDetection();
+    console.log('TestCheckCallDetection', response);
+  }
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
@@ -121,6 +126,16 @@ export default function App() {
           title="Add Spam Number"
           color="#D0021B"
           accessibilityLabel="Do Add Spam Number"
+          disabled={!isInitialized}
+        />
+        <View style={styles.smallSpace} />
+        <Button
+          onPress={() => {
+            TestCheckCallDetection();
+          }}
+          title="Check Call Detection"
+          color="#D0021B"
+          accessibilityLabel="Check Call Detection"
           disabled={!isInitialized}
         />
       </View>

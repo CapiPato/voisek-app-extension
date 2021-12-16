@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 
 @interface RCT_EXTERN_MODULE(VoisekAppExtension, NSObject)
@@ -36,4 +37,9 @@ RCT_EXTERN_METHOD(showAFullScreenNotification:(NSString*)title
                   withTimerForNotToShow: (NSNumber*)timerForNotToShow)
 
 RCT_EXTERN_METHOD(reloadCallExtension)
+
+
+RCT_EXTERN_METHOD(checkCallDetection:(RCTPromiseResolveBlock*)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 @end

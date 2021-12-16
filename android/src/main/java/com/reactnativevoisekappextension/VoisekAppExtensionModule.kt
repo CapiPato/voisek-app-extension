@@ -295,6 +295,13 @@ class VoisekAppExtensionModule(reactContext: ReactApplicationContext) :
 
   }
 
+  @ReactMethod
+  fun checkCallDetection(
+    callbackSuccess: Callback?,
+    callbackFail: Callback?){
+    callbackSuccess?.invoke(true);
+  }
+
   private fun requestRole() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && canRequestRole()) {
       try {
