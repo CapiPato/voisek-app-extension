@@ -106,11 +106,12 @@ class VoisekAppExtension: NSObject {
     
     @objc(checkCallDetection:withRejecter:)
     func checkCallDetection(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        var isOnCall = false;
         for call in CXCallObserver().calls {
             if call.hasEnded == false {
-                resolve(true)
+                isOnCall = true
             }
         }
-        resolve(false)
+        resolve(isOnCall)
     }
 }
